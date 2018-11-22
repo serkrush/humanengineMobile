@@ -43,6 +43,8 @@ class Identity extends Model {
     }
 
     public * authorize({ userEmail, password, timezone }) {
+        console.log('authorize');
+        
         try {
             const func = this.submit("login", "/auth/login", "POST").bind(this);
             const { response } = yield call(func, { userEmail, password, timezone });

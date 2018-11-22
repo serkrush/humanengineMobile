@@ -91,7 +91,7 @@ export default class Model {
         if (Auth.isUserAuthenticated()) {
             params["headers"]["Authorization"] = "bearer " + Auth.getToken();
         }
-        return fetch("http://192.168.77.101:3030" + fullUrl, params).then((response) => {
+        return fetch("http://192.168.77.123:3030" + fullUrl, params).then((response) => {
             return response.json().then((json) => ({ json, response }));
         },
         ).then(({ json, response }) => {
