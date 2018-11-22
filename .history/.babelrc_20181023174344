@@ -1,0 +1,14 @@
+{
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": ["."],
+        "alias": {
+          "app": "./src"
+        }
+      }
+    ]
+  ],
+  "presets": ["module:metro-react-native-babel-preset"]
+}
