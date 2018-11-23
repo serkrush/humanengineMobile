@@ -50,6 +50,8 @@ class Identity extends Model {
             const { response } = yield call(func, { userEmail, password, timezone });
             if (response && response.entities && response.entities.hasOwnProperty("identity")) {
                 const user = response.entities.identity.user;
+                console.log('user identity', user);
+                
                 if (user) {
                     yield call(Auth.init, user);
                     NavigationService.navigate("Drawer", {});

@@ -1,10 +1,8 @@
 import Model, { CRUD }  from "./model";
 import { action } from "../redux/actions";
-import { take, fork } from "redux-saga/effects";
+import { take, call } from "redux-saga/effects";
 
 const LOAD_TRAINING = "LOAD_TRAINING";
-
-export const ITEMS_PER_PAGE = 25;
 
 export const loadTraining = () => action(LOAD_TRAINING,  {} );
 
@@ -18,13 +16,50 @@ class Training extends Model {
 
     public * watchLoadTraining() {
         const func = this.request("/training", {method: "POST", crud: CRUD.READ}).bind(this);
+
         while (true) {
             yield take(LOAD_TRAINING);
-            yield fork(func);
+            console.log('call training');
+            
+            yield call(func);
         }
     }
 
+
+//     fetch('https://mywebsite.com/endpoint/', {
+//   method: 'POST',
+//   headers: {
+//     Accept: 'application/json',
+//     'Content-Type': 'application/json',
+//   },
+//   body: JSON.stringify({
+//     firstParam: 'yourValue',
+//     secondParam: 'yourOtherValue',
+//   }),
+// });
+
+
+    // public * authorize({ userEmail, password, timezone }) {
+    //     console.log('authorize');
+        
+    //     try {
+    //         const func = this.submit("login", "/auth/login", "POST").bind(this);
+    //         const { response } = yield call(func, { userEmail, password, timezone });
+    //         if (response && response.entities && response.entities.hasOwnProperty("identity")) {
+    //             const user = response.entities.identity.user;
+    //             if (user) {
+    //                 yield call(Auth.init, user);
+    //                 NavigationService.navigate("Drawer", {});
+    //             }
+    //         }
+    //     } finally {
+    //         if (yield cancelled()) {
+    //             console.log("authorize yield cancelled");
+    //         }
+    //     }
+    // }
+
 }
 
-const workout = new Training();
-export default workout;
+const training = new Training();
+export default training;
