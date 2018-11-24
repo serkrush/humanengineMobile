@@ -75,7 +75,8 @@ export default class Model {
         this.pageEntity =  this.pageEntity.bind(this);
     }
 
-    protected callApi(endpoint,  method = "GET", data = {}) {
+    protected async callApi(endpoint,  method = "GET", data = {}) {
+        
         let fullUrl = endpoint;
         const params = {
             method,
@@ -88,9 +89,10 @@ export default class Model {
             let params = Object.entries(data).map(([key, val]) => key + "=" + val).join("&");
             fullUrl += ("?" + params);
         }
-        if (Auth.isUserAuthenticated()) {
-            params["headers"]["Authorization"] = "bearer " + Auth.getToken();
+        if (await Auth.isUserAuthenticated()) {
+            params["headers"]["Authorization"] = "bearer " + await Auth.getToken();
         }
+
         return fetch("http://192.168.77.123:3030" + fullUrl, params).then((response) => {
             return response.json().then((json) => ({ json, response }));
         },

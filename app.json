@@ -1,4 +1,10 @@
 {
   "name": "AwesomeProject",
-  "displayName": "AwesomeProject"
+  "displayName": "AwesomeProject",
+  "expo": {
+    "slug": "AwesomeProject",
+    "name": "AwesomeProject",
+    "sdkVersion": "31.0.0",
+    "entryPoint": "/home/krushelnitskiy-su/projects/humanengineMobile/.vscode/exponentIndex.js"
+  }
 }
