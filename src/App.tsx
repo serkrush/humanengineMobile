@@ -11,6 +11,7 @@ const deviceWidth = Dimensions.get("window").width;
 import NavigationService from "./NavigationService";
 import Login from "./container/LoginContainer";
 import Home from "./container/HomeContainer";
+import Workout from "./container/WorkoutContainer";
 import BlankPage from "./container/BlankPageContainer";
 import Sidebar from "./container/SidebarContainer";
 import Auth from "./auth";
@@ -19,6 +20,7 @@ import { loadApp } from "./models/pages";
 const Drawer = DrawerNavigator(
 	{
 		Home: { screen: Home },
+		Workout: { screen: Workout },
 	},
 	{
 		drawerWidth: deviceWidth - 50,

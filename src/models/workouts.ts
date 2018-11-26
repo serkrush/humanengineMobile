@@ -34,14 +34,13 @@ class Workout extends Model {
     }
 
     public * watchLoadWorkoutsUser() {
-        // const func = this.request("/workout/user", {method: "GET", crud: CRUD.READ}).bind(this);
-        console.log('watchLoadWorkoutsUser11111111111111111111111');
-        
-        const func = this.request("/workout", {method: "GET", crud: CRUD.READ}).bind(this);
+        const func = this.request("/workout/user", {method: "POST", crud: CRUD.READ}).bind(this);
+
         while (true) {
             yield take(LOAD_WORKOUTS_USER);
-            console.log('watchLoadWorkoutsUser2222222222222222222222222222');
-            yield fork(func);
+            console.log('LOAD_WORKOUTS_USER mobile');
+            yield call(this.request("/workout/public", {method: "POST", crud: CRUD.READ}).bind(this));
+            yield call(func);
         }
     }
 

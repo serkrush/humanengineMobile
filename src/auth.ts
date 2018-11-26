@@ -7,9 +7,10 @@ class Auth {
      *
      * @param {string} token
      */
-    static async authenticateUser(token) {
+    static async authenticateUser(token, userId) {
         try {
             await AsyncStorage.setItem("token", token);
+            await AsyncStorage.setItem("userId", userId);
         } catch (error) {
             // Error retrieving data
             console.log(error.message);
@@ -38,6 +39,7 @@ class Auth {
     static async deauthenticateUser() {
         try {
             await AsyncStorage.removeItem("token");
+            await AsyncStorage.removeItem("userId");
         } catch (error) {
             console.log(error.message);
         }
@@ -59,10 +61,32 @@ class Auth {
         return token;
     }
 
+    /**
+     * Get a user id.
+     *
+     * @returns {string}
+     */
+
+    static async getUserId() {
+
+
+        let userId = null;
+
+        
+        try {
+            userId = await AsyncStorage.getItem("userId") || null;
+        } catch (error) {
+            console.log(error.message);
+        }
+        return userId;
+    }
+
     static async init(data) {
+        console.log('init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',data);
+        
         try {
             await AsyncStorage.setItem("identity", JSON.stringify(data));
-            Auth.authenticateUser(data.token);
+            Auth.authenticateUser(data.token, data.userId);
         } catch (error) {
             // Error retrieving data
             console.log(error.message);
