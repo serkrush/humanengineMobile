@@ -14,22 +14,29 @@ import {
 	
 } from "native-base";
 import { Image, View } from 'react-native';
+import { Tab, Tabs } from 'native-base';
 
 import Workout from "../../models/workouts";
 
 import styles from '../../stories/screens/Home/styles';
+// import {  TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 
 export interface Props {
 	navigation: any;
 }
 
 export interface State {}
+
 class WorkoutContainer extends React.Component<Props, State> {
+		
 
 	render() {
 		const { navigation } = this.props;
 		const workout = navigation.getParam('workout', []);
+		const days = workout.get('days');
+		console.log('days', days.size, days.count);
 		
+
 		return (
 			<Container style={styles.container}>
 				<Header>
@@ -63,9 +70,20 @@ class WorkoutContainer extends React.Component<Props, State> {
 						</Button>
 					</View>
 
+					<Text>{workout.get('description')}</Text>
 
+					<Tabs>
+
+						{
+							days && days.map((day, i) => {
+								console.log('day',day);
+								return<Tab heading={"Day" + (i*1 + 1*1)}>
+										<Text>i</Text>
+									</Tab>;
+							})
+						}
+					</Tabs>
 			
-
 
 				</Content>
 			</Container>
