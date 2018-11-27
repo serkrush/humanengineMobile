@@ -70,11 +70,11 @@ class Auth {
     static async getUserId() {
 
 
-        let userId = null;
+        let userId = '';
 
         
         try {
-            userId = await AsyncStorage.getItem("userId") || null;
+            userId = await AsyncStorage.getItem("userId") || '';
         } catch (error) {
             console.log(error.message);
         }

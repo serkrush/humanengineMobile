@@ -29,6 +29,7 @@ export interface IFetchOptions {
 export default class Model {
     protected mEntityName: string;
     protected mSchema: Schema;
+    protected mIP: string;
 
     private static mStore: Store<any>;
     private static mSagas = [];
@@ -63,16 +64,22 @@ export default class Model {
         return this.mEntityName;
     }
 
+    public get IP() {
+        return this.mIP;
+    }
+
     public static set store(store: Store<any>) {
         Model.mStore = store;
     }
 
     constructor(name: string = null, definitions: any = {}, options:any = {}) {
         this.mEntityName = name;
+        this.mIP = 'http://192.168.77.123:3030';
         this.mSchema = name && [ new schema.Entity(name, definitions, options) ];
         this.getAction = this.getAction.bind(this);
         this.callApi = this.callApi.bind(this);
         this.pageEntity =  this.pageEntity.bind(this);
+
     }
 
     protected async callApi(endpoint,  method = "GET", data = {}) {
@@ -92,8 +99,8 @@ export default class Model {
         if (await Auth.isUserAuthenticated()) {
             params["headers"]["Authorization"] = "bearer " + await Auth.getToken();
         }
-
-        return fetch("http://192.168.77.123:3030" + fullUrl, params).then((response) => {
+        
+        return fetch(this.mIP + fullUrl, params).then((response) => {
             return response.json().then((json) => ({ json, response }));
         },
         ).then(({ json, response }) => {
@@ -143,53 +150,6 @@ export default class Model {
             break;
         }
     }
-
-    // private inCach(entity, key) {
-    //     const state = Model.store.getState();
-    //     return state.cached.has(entity) && state.cached.get(entity).has(key);
-    // }
-
-    // private readFromCach(entity, key) {
-    //     return new Promise((resolve, reject) => {
-    //         if (this.inCach(entity, key)) {
-    //             const state = Model.store.getState();
-    //             const ids = state.cached.get(entity).get(key);
-    //             const entities = state.entities.get(entity).filter( (v, k) => {
-    //                 return ids.includes(k);
-    //             });
-    //             resolve(entities);
-    //         } else {
-    //             reject(new Error("The [" + entity + "] cach is empty"));
-    //         }
-    //     });
-    // }
-
-    // protected fetch(url, options: IFetchOptions, data: any = {} ) {
-    //     const action = this.getAction();
-    //     const key = md5(url + options.method + JSON.stringify(data));
-    //     Model.store.dispatch( action.request(data));
-
-    //     if (options.cashed && this.inCach(this.mEntityName, key)) {
-    //         return this.readFromCach(this.mEntityName, key);
-    //     }
-
-    //     return this.callApi( url, options.method, data)
-    //         .then( ({ response, message }) => {
-    //             if (response) {
-    //                 const ids = response.hasOwnProperty("result") ? response.result : [];
-    //                 response["cach"] = options.cashed ? { key, ids } : {},
-    //                 Model.store.dispatch(action.success(data, response ));
-    //                 if (message) {
-    //                     Model.store.dispatch( sendMessage(message) );
-    //                 }
-    //                 return response;
-    //             } else {
-    //                 this.handleStatus(message.code);
-    //                 Model.store.dispatch(action.failure(data, message));
-    //                 return Promise.reject(message);
-    //             }
-    //         });
-    // }
 
     protected * actionRequest(url, options: IFetchOptions, data: any = {} ) {
         const action = this.getAction(options.crud);

@@ -2,6 +2,7 @@ import Model, { CRUD }  from "./model";
 import { action, pageFetching } from "../redux/actions";
 import { call, select, put, take, fork } from "redux-saga/effects";
 
+
 const LOAD_WORKOUTS_USER = "LOAD_WORKOUTS_USER";
 const FETCH_WORKOUTS = "FETCH_WORKOUTS";
 const FIND_BY_ID = "FIND_BY_ID";
@@ -25,6 +26,14 @@ class Workout extends Model {
         );
     }
 
+    public * linkImg(file = '') {
+        console.log('file', file);
+        console.log('this.mIP', this.mIP);
+        console.log('return', this.mIP + '/upload/file?s=workouts&f=' + file + '&d=muscle.png');
+        
+        return this.mIP + '/upload/file?s=workouts&f=' + file + '&d=muscle.png';
+    }
+
     public * watchChangeWorkout() {
         const func = this.request("/api/workout", {method: "PUT", crud: CRUD.UPDATE}).bind(this);
         while (true) {
@@ -34,11 +43,11 @@ class Workout extends Model {
     }
 
     public * watchLoadWorkoutsUser() {
+
         const func = this.request("/workout/user", {method: "POST", crud: CRUD.READ}).bind(this);
 
         while (true) {
             yield take(LOAD_WORKOUTS_USER);
-            console.log('LOAD_WORKOUTS_USER mobile');
             yield call(this.request("/workout/public", {method: "POST", crud: CRUD.READ}).bind(this));
             yield call(func);
         }
@@ -81,16 +90,16 @@ class Workout extends Model {
         }
     }
 
-    public getOptions(workouts: any) {
-        const workoutSelect = [];
-        workouts.forEach((workout, id) => {
-            workoutSelect.push({
-                label: workout.get("name").get("common"),
-                value: id,
-            });
-        });
-        return workoutSelect;
-    }
+    // public getOptions(workouts: any) {
+    //     const workoutSelect = [];
+    //     workouts.forEach((workout, id) => {
+    //         workoutSelect.push({
+    //             label: workout.get("name").get("common"),
+    //             value: id,
+    //         });
+    //     });
+    //     return workoutSelect;
+    // }
 
 }
 

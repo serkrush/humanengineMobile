@@ -11,22 +11,25 @@ import {
 	Left,
 	Body,
 	Right,
-	List,
-	ListItem,
 	
 } from "native-base";
-// import { AppRegistry, FlatList, StyleSheet, View } from 'react-native';
+import { Image, View } from 'react-native';
 
-import styles from '../../stories/screens/Home/styles';//"../stories/screens/styles";
+import Workout from "../../models/workouts";
+
+import styles from '../../stories/screens/Home/styles';
 
 export interface Props {
 	navigation: any;
 }
-// X4j9WHAuvuMS
+
 export interface State {}
 class WorkoutContainer extends React.Component<Props, State> {
 
 	render() {
+		const { navigation } = this.props;
+		const workout = navigation.getParam('workout', []);
+		
 		return (
 			<Container style={styles.container}>
 				<Header>
@@ -45,21 +48,40 @@ class WorkoutContainer extends React.Component<Props, State> {
 					<Right />
 				</Header>
 				<Content>
-					<Text>11111</Text>
+					<View style={{position:'relative',height: 250}}>
+						<Image 
+							source={{uri: Workout['mIP'] + '/upload/file?s=workouts&f=' + workout.get('workoutImg') +'&d=muscle.png'}} 
+							style={{position: 'absolute',width: '100%',height: '100%',}}
+						/>
+						<View style={{position: 'absolute',width: '100%',height: '100%',backgroundColor: '#FFF', opacity:0.8}}></View>
+						<Text style={{textAlign:'center', fontSize:25, marginTop:40, fontWeight:'bold'}}>{workout.get('workoutName')}</Text>
+						<Button style={{marginLeft:'auto',marginRight:'auto',marginTop:30, backgroundColor:'#47525e'}}>
+							<Text>Start Workout</Text>
+						</Button>
+						<Button style={{marginLeft:'auto',marginRight:'auto',marginTop:15, backgroundColor:'#47525e'}}>
+							<Text>History</Text>
+						</Button>
+					</View>
+
+
+			
+
+
 				</Content>
 			</Container>
 		);
 	}
 }
 
-// const mapStateToProps = (state,) => {
-// 	const { entities } = state;
-// 	const workouts = entities.get('workouts');
+const mapStateToProps = (state, props) => {
+	console.log('state',state);
+	console.log('props',props);
 	
-//     return {
-// 		workouts: workouts,
-//     };
-// }
+	
+    return {
+		// workouts: workouts,
+    };
+}
 
 // export default connect(mapStateToProps, {loadWorkoutsUser})(HomeContainer);
-export default connect(null, null)(WorkoutContainer);
+export default connect(mapStateToProps, null)(WorkoutContainer);

@@ -1,11 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
-//import Home from "../../stories/screens/Home";
 import ViewWorkout from "../HomeContainer/ViewWorkout";
-import { remove, clone, push } from "lodash";
-//import datas from "./data";
-// import { loadWorkoutsUser } from '../../models/workouts';
-// import { loadTraining } from '../../models/training';
 import { loadWorkoutsUser } from '../../models/workouts';
 import { Action } from 'redux';
 import Auth from "../../auth";
@@ -20,14 +15,13 @@ import {
 	Left,
 	Body,
 	Right,
-	List,
-	ListItem,
 	
 } from "native-base";
 // import { AppRegistry, FlatList, StyleSheet, View } from 'react-native';
 
 import { Map } from 'immutable';
 import styles from '../../stories/screens/Home/styles';//"../stories/screens/styles";
+import UserContext from "../../UserContext";
 
 export interface Props {
 	navigation: any;
@@ -36,58 +30,71 @@ export interface Props {
 	loadWorkoutsUser: () => Action<any>;
 }
 // X4j9WHAuvuMS
-export interface State {}
+export interface State {
+	userId: string;
+}
 class HomeContainer extends React.Component<Props, State> {
-	private _userId = null;
-
-	async componentDidMount() {
-		const { loadWorkoutsUser } = this.props;
-		Auth.getToken().then(token => console.log("token", token));
-		this._userId = await Auth.getUserId();
-		loadWorkoutsUser();
+	
+	constructor(props) {
+		super(props);
+		this.renderContainer = this.renderContainer.bind(this);
 	}
 
-	render() {
-		const { workouts } = this.props;
+	async componentDidMount() {
+		const { loadWorkoutsUser} = this.props;
+		Auth.getToken().then(token => console.log("token", token));
 		
+		const userId = await Auth.getUserId() || '';
+		this.setState({ userId });
+		loadWorkoutsUser();
+	}
+	
+	renderContainer(user) {
+		const { workouts, navigation } = this.props;
 		let workoutsUser = [];
 		let workoutsPublic = [];
 		workouts && workouts.map((t, i) => {
-			if (t.get('userId')==this._userId){
+			
+			if (t.get('userId')===user.userId){
 				workoutsUser.push(t);
 			}
-			if (t.get('status')=='public'){
+			if (t.get('status')==='public'){
 				workoutsPublic.push(t);
 			}
 			
-			console.log('workoutsUser', workoutsUser, workoutsPublic);
-			
 		});
-		return (
-			<Container style={styles.container}>
-				<Header>
-					<Left>
-						<Button transparent>
-						<Icon
-							active
-							name="menu"
-							onPress={() => this.props.navigation.navigate("DrawerOpen")}
-						/>
-						</Button>
-					</Left>
-					<Body>
-						<Title>Home</Title>
-					</Body>
-					<Right />
-				</Header>
-				<Content>
-					<Text style={{ fontSize:20, fontWeight: 'bold' }}>My Workouts</Text>
-					{(workoutsUser)?<ViewWorkout workouts={workoutsUser} />:null}
-					<Text style={{ fontSize:20, fontWeight: 'bold', marginTop:10 }}>Templates</Text>
-					{(workoutsPublic)?<ViewWorkout workouts={workoutsPublic} />:null}
-				</Content>
-			</Container>
-		);
+
+		return <Container style={styles.container}>
+			<Header>
+				<Left>
+					<Button transparent>
+					<Icon
+						active
+						name="menu"
+						onPress={() => this.props.navigation.navigate("DrawerOpen")}
+					/>
+					</Button>
+				</Left>
+				<Body>
+					<Title>Home</Title>
+				</Body>
+				<Right />
+			</Header>
+			<Content>
+				<Text style={{ fontSize:20, fontWeight: 'bold' }}>My Workouts</Text>
+				{(workoutsUser)?<ViewWorkout navigation={navigation} workouts={workoutsUser} />:null}
+				<Text style={{ fontSize:20, fontWeight: 'bold', marginTop:10 }}>Templates</Text>
+				{(workoutsPublic)?<ViewWorkout navigation={navigation} workouts={workoutsPublic} />:null}
+			</Content>
+		</Container>
+	}
+
+	public render() {
+		return <UserContext.Consumer>
+				{
+					this.renderContainer
+				}
+			</UserContext.Consumer>
 	}
 }
 

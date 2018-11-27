@@ -16,6 +16,7 @@ import BlankPage from "./container/BlankPageContainer";
 import Sidebar from "./container/SidebarContainer";
 import Auth from "./auth";
 import { loadApp } from "./models/pages";
+import UserContext from "./UserContext";
 
 const Drawer = DrawerNavigator(
 	{
@@ -46,6 +47,7 @@ const AppUser = StackNavigator(
 		Login: { screen: Login },
 		BlankPage: { screen: BlankPage },
 		Drawer: { screen: Drawer },
+		Workout: { screen: Workout },
 	},
 	{
 		initialRouteName: "Drawer",
@@ -54,19 +56,19 @@ const AppUser = StackNavigator(
 );
 
 interface Props {
-	promise: Promise<boolean>;
-	then: (value: boolean) => JSX.Element;
+	promise: Promise<string>;
+	then: (value: string) => JSX.Element;
 }
 
 interface State {
-	value: boolean;
+	value: string;
 }
 
 class Deferred extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
-			value: false,
+			value: "",
 		};
 	}
 	componentDidMount() {
@@ -85,25 +87,28 @@ export interface IAppProps {
 }
 
 class IApp extends React.Component<IAppProps, any> {
-	
+	private _userId = "";
+
 	componentDidMount() {
 		this.props.loadApp();
 		console.log('app mounted');
-		
 	}
 
-	public render() {
-		console.log('IApp rendered');
+	render() {
+		console.log('IApp rendered', this._userId);
 		
 		return (
-		<Root>
-			<Deferred promise={Auth.isUserAuthenticated()} then={isUser => {
-				return isUser ?
-					<AppUser ref={navigatorRef => { NavigationService.setTopLevelNavigator(navigatorRef); } }/>
-					:
-					<AppGuest ref={navigatorRef => { NavigationService.setTopLevelNavigator(navigatorRef); } }/>} 
-			}/>
-		</Root>
+				<Root>
+					<Deferred promise={Auth.getUserId()} then={userId => {
+						return userId != null && userId.length > 0 ?
+							<UserContext.Provider value={{userId}}>
+								<AppUser ref={navigatorRef => { NavigationService.setTopLevelNavigator(navigatorRef); } }/>
+							</UserContext.Provider>				
+							:
+							<AppGuest ref={navigatorRef => { NavigationService.setTopLevelNavigator(navigatorRef); } }/>} 
+					}/>
+				</Root>
+			
 		);
 	}
 }
