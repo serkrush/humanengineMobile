@@ -1,5 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
+
 import {
 	Container,
 	Header,
@@ -14,27 +15,42 @@ import {
 	
 } from "native-base";
 import { Image, View } from 'react-native';
-import { Tab, Tabs } from 'native-base';
+import { Tab, Tabs, ScrollableTab, Card, CardItem, } from 'native-base';
 
 import Workout from "../../models/workouts";
 
 import styles from '../../stories/screens/Home/styles';
+// import { loadWorkoutExercises } from '../../models/workouts';
 // import {  TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 
 export interface Props {
 	navigation: any;
+	exercises: Map<String, Object>;
+	entities: any;
+	// loadWorkoutExercises: (data) => Action<any>;
 }
 
 export interface State {}
 
 class WorkoutContainer extends React.Component<Props, State> {
 		
+	// componentDidMount() {
+	// 	const { loadWorkoutExercises, navigation} = this.props;
+		
+	// 	loadWorkoutExercises(navigation.getParam('workout', []));
+	// }
 
 	render() {
-		const { navigation } = this.props;
+		const { navigation, exercises, entities } = this.props;
 		const workout = navigation.getParam('workout', []);
 		const days = workout.get('days');
-		console.log('days', days.size, days.count);
+
+		if ( entities && entities.has('exercises') ){
+			console.log('cool!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', entities.getIn(['exercises', '5bd7112891c9f47706258a96']));	
+			console.log('cool2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', exercises.has('5bd7112891c9f47706258a96'));	
+		}
+		console.log('exercise', exercises);
+		console.log('exercise has', "5bd7112891c9f47706258a96" in exercises);
 		
 
 		return (
@@ -72,14 +88,40 @@ class WorkoutContainer extends React.Component<Props, State> {
 
 					<Text>{workout.get('description')}</Text>
 
-					<Tabs>
+					<Tabs renderTabBar={()=> <ScrollableTab />}>
 
 						{
 							days && days.map((day, i) => {
-								console.log('day',day);
-								return<Tab heading={"Day" + (i*1 + 1*1)}>
-										<Text>i</Text>
-									</Tab>;
+								return<Tab key={"day_" + i} heading={"Day" + (i*1 + 1*1)}>
+									{
+										day && day.valueSeq().map((exercise, e)=>{
+											return <View key={"exercise_"+e+"_"+Math.random()}>
+												{
+													exercise && exercise.size>0 && exercise.map((ex, ei)=>{
+														// console.log('ex', ex.get('exercise'), ex.get('sets'));
+														let _exercise = entities.getIn(['exercises', ex.get('exercise')]);
+														
+														
+														
+														return 	<Card key={"ex"+ei+"_"+Math.random()}>
+																	<CardItem>
+																		<Body>
+																			<Text>
+																				{_exercise.get('exerciseName')}
+																				
+																				{<Image source={{uri: Workout['mIP'] + '/upload/file?s=exercises&f=' + _exercise.get('exerciseImg')+'&d=muscle.png'}} style={{height: 50, width: 50}}/>}
+																			</Text>
+																		</Body>
+																	</CardItem>
+																</Card>;
+														// return <Text key={"ex"+ei+"_"+Math.random()}>
+														// 	<View>{ex.get('exercise')}</View>
+														// </Text>;
+													})
+												}
+											</View>;
+										})
+									}</Tab>;
 							})
 						}
 					</Tabs>
@@ -92,12 +134,13 @@ class WorkoutContainer extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state, props) => {
-	console.log('state',state);
-	console.log('props',props);
+	const { entities } = state;
+	const exercises = entities.get('exercises');
 	
 	
     return {
-		// workouts: workouts,
+		exercises,
+		entities,
     };
 }
 

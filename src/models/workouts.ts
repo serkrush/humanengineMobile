@@ -1,37 +1,46 @@
 import Model, { CRUD }  from "./model";
 import { action, pageFetching } from "../redux/actions";
 import { call, select, put, take, fork } from "redux-saga/effects";
+import { schema } from 'normalizr';
 
 
 const LOAD_WORKOUTS_USER = "LOAD_WORKOUTS_USER";
 const FETCH_WORKOUTS = "FETCH_WORKOUTS";
 const FIND_BY_ID = "FIND_BY_ID";
 const CHANGE_WORKOUTS = "CHANGE_WORKOUTS";
+const WORKOUT_EXERCISES = "WORKOUT_EXERCISES";
 
 export const ITEMS_PER_PAGE = 25;
 
 export const loadWorkoutsUser = () => action(LOAD_WORKOUTS_USER,  {} );
+export const loadWorkoutExercises = ( data )  => action(WORKOUT_EXERCISES, data);
 export const fetchWorkouts = ( params ) => action(FETCH_WORKOUTS, params );
 export const findById = ( id )  => action(FIND_BY_ID, { id });
 export const changeWorkout = ( data )  => action(CHANGE_WORKOUTS, data);
 
 class Workout extends Model {
     constructor() {
-        super("workouts");
+        // super("workouts");
+        super('workouts', {
+            
+            days: [
+                { 
+                    exercises:[
+                        {
+                            category: new schema.Entity('categories'),
+                            exercise: new schema.Entity('exercises'),
+                        }
+                    ]
+                }
+            ]
+        });
         Model.addSaga(
             this.watchLoadWorkoutsUser.bind(this),
+            this.watchLoadWorkoutExercises.bind(this),
             this.whatchFetchWorkouts.bind(this),
             this.findById.bind(this),
             this.watchChangeWorkout.bind(this),
         );
-    }
-
-    public * linkImg(file = '') {
-        console.log('file', file);
-        console.log('this.mIP', this.mIP);
-        console.log('return', this.mIP + '/upload/file?s=workouts&f=' + file + '&d=muscle.png');
-        
-        return this.mIP + '/upload/file?s=workouts&f=' + file + '&d=muscle.png';
     }
 
     public * watchChangeWorkout() {
@@ -50,6 +59,21 @@ class Workout extends Model {
             yield take(LOAD_WORKOUTS_USER);
             yield call(this.request("/workout/public", {method: "POST", crud: CRUD.READ}).bind(this));
             yield call(func);
+        }
+    }
+
+    /**
+     * watchLoadWorkoutExercises
+     */
+    public * watchLoadWorkoutExercises() {
+        while (true) {
+            const data = yield take(WORKOUT_EXERCISES);
+            console.log('watchLoadWorkoutExercises data d', data.get('days'));
+
+            // data && data.map((d,i)=>{
+            //     console.log('watchLoadWorkoutExercises data d', d,i);
+            // })
+            // yield fork(func, data);
         }
     }
 
