@@ -44,7 +44,7 @@ class Workout extends Model {
     }
 
     public * watchChangeWorkout() {
-        const func = this.request("/api/workout", {method: "PUT", crud: CRUD.UPDATE}).bind(this);
+        const func = this.request("/workout", {method: "PUT", crud: CRUD.UPDATE}).bind(this);
         while (true) {
             const data = yield take(CHANGE_WORKOUTS);
             yield fork(func, data);

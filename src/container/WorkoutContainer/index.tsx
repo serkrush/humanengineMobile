@@ -33,25 +33,11 @@ export interface Props {
 export interface State {}
 
 class WorkoutContainer extends React.Component<Props, State> {
-		
-	// componentDidMount() {
-	// 	const { loadWorkoutExercises, navigation} = this.props;
-		
-	// 	loadWorkoutExercises(navigation.getParam('workout', []));
-	// }
 
 	render() {
 		const { navigation, exercises, entities } = this.props;
 		const workout = navigation.getParam('workout', []);
 		const days = workout.get('days');
-
-		if ( entities && entities.has('exercises') ){
-			console.log('cool!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', entities.getIn(['exercises', '5bd7112891c9f47706258a96']));	
-			console.log('cool2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', exercises.has('5bd7112891c9f47706258a96'));	
-		}
-		console.log('exercise', exercises);
-		console.log('exercise has', "5bd7112891c9f47706258a96" in exercises);
-		
 
 		return (
 			<Container style={styles.container}>
@@ -66,7 +52,7 @@ class WorkoutContainer extends React.Component<Props, State> {
 						</Button>
 					</Left>
 					<Body>
-						<Title>Home</Title>
+						<Title>Workout</Title>
 					</Body>
 					<Right />
 				</Header>
@@ -86,9 +72,9 @@ class WorkoutContainer extends React.Component<Props, State> {
 						</Button>
 					</View>
 
-					<Text>{workout.get('description')}</Text>
+					<Text>{ workout.get('description') }</Text>
 
-					<Tabs renderTabBar={()=> <ScrollableTab />}>
+					<Tabs renderTabBar={ ()=> <ScrollableTab /> }>
 
 						{
 							days && days.map((day, i) => {
@@ -98,25 +84,62 @@ class WorkoutContainer extends React.Component<Props, State> {
 											return <View key={"exercise_"+e+"_"+Math.random()}>
 												{
 													exercise && exercise.size>0 && exercise.map((ex, ei)=>{
-														// console.log('ex', ex.get('exercise'), ex.get('sets'));
+														console.log('ex2', ex.get('sets'));
+														let _set = 0;
+														let _rep = 0;
+														let _rm = 0;
+														let _rest = 0;
+														ex.get('sets') && ex.get('sets').map((set)=>{
+															_set +=  set.get('set');
+															_rep +=  set.get('rep');
+															_rm +=  set.get('rm');
+															_rest +=  set.get('rest');
+														})
+
 														let _exercise = entities.getIn(['exercises', ex.get('exercise')]);
-														
-														
 														
 														return 	<Card key={"ex"+ei+"_"+Math.random()}>
 																	<CardItem>
 																		<Body>
-																			<Text>
-																				{_exercise.get('exerciseName')}
-																				
-																				{<Image source={{uri: Workout['mIP'] + '/upload/file?s=exercises&f=' + _exercise.get('exerciseImg')+'&d=muscle.png'}} style={{height: 50, width: 50}}/>}
-																			</Text>
+																			<View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap', alignItems: "center" }}>
+																				<View style={{ width: "25%" }}>
+																					{ <Image source={{uri: Workout['mIP'] + '/upload/file?s=exercises&f=' + _exercise.get('exerciseImg')+'&d=muscle.png'}} style={{height: 50}}/> }
+																				</View>
+																				<View style={{ width: "75%", paddingLeft: 15 }}>
+																					<Text>
+																						{ _exercise.get('exerciseName') }
+																					</Text>
+																					<View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
+																						<View style={{width:"50%"}}>
+																							<Text style={{color: "#CCC"}}>
+																								Sets: {_set}
+																							</Text>
+																						</View>
+																						<View style={{width:"50%"}}>
+																							<Text style={{color: "#CCC"}}>
+																								Reps: {_rep}
+																							</Text>
+																						</View>
+																					</View>
+																					<View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
+																						<View style={{width:"50%"}}>
+																							<Text style={{color: "#CCC"}}>
+																								RM: {_rm}
+																							</Text>
+																						</View>
+																						<View style={{width:"50%"}}>
+																							<Text style={{color: "#CCC"}}>
+																								Rest: {_rest}
+																							</Text>
+																						</View>
+																					</View>
+																					
+																				</View>
+																			</View>
 																		</Body>
 																	</CardItem>
 																</Card>;
-														// return <Text key={"ex"+ei+"_"+Math.random()}>
-														// 	<View>{ex.get('exercise')}</View>
-														// </Text>;
+
 													})
 												}
 											</View>;

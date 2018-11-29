@@ -21,7 +21,7 @@ class ViewWorkout extends React.Component<Props, State> {
                 {
                     workouts && workouts.map((t, i) => {
                         
-                        return<TouchableOpacity key={"workout_"+i+"_"+Math.random()} style={{width:"50%"}}  onPress={() => this.props.navigation.navigate("Workout", {workout: t, name: 'Jane'})}><View>
+                        return<TouchableOpacity key={"workout_"+i+"_"+Math.random()} style={{width:"50%"}} onPress={() => this.props.navigation.navigate("Workout", {workout: t})}><View>
                                 <Card>
                                     <CardItem cardBody>
                                         <Image source={{uri: Workout['mIP'] + '/upload/file?s=workouts&f=' + t.get('workoutImg') +'&d=muscle.png'}} style={{height: 125, width: null, flex: 1}}/>

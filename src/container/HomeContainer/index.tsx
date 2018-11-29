@@ -15,7 +15,6 @@ import {
 	Left,
 	Body,
 	Right,
-	
 } from "native-base";
 // import { AppRegistry, FlatList, StyleSheet, View } from 'react-native';
 
@@ -86,6 +85,12 @@ class HomeContainer extends React.Component<Props, State> {
 				<Text style={{ fontSize:20, fontWeight: 'bold', marginTop:10 }}>Templates</Text>
 				{(workoutsPublic)?<ViewWorkout navigation={navigation} workouts={workoutsPublic} />:null}
 			</Content>
+			<Button 
+				onPress={() => this.props.navigation.navigate("NewWorkout", {})} 
+				style={{position:"absolute",right:10,bottom:20,borderRadius:50,backgroundColor:"#00a6ff"}}
+			>
+				<Text> + </Text>
+			</Button>
 		</Container>
 	}
 
