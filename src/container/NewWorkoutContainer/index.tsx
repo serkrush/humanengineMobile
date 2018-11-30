@@ -21,7 +21,7 @@ import {
 import styles from '../../stories/screens/Home/styles';
 import { changeWorkout } from '../../models/workouts';
 // import {  TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
-import { Field, FieldArray, reduxForm, InjectedFormProps } from "redux-form";
+import { Field, FieldArray, reduxForm } from "redux-form";
 
 
 const required = value => (value ? undefined : "Required");
@@ -32,19 +32,13 @@ export interface Props {
 }
 
 export interface State {
-	days : number;
 }
 class NewWorkoutContainer extends React.Component<Props, State> {
 	textInput: any;
 	constructor(props: Props) {
 		
 		super(props);
-		this.state = {
-            days: 1,
-            // myError: ''
-        };
 		this.addWorkout = this.addWorkout.bind(this);
-		this.dayPlus = this.dayPlus.bind(this);
 	}
 	renderInput({ input, meta: { touched, error } }) {
 		return (
@@ -66,17 +60,8 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 		changeWorkout(data);
 	}
 
-	dayPlus(){
-		this.state.set('days',5);
-	}
-
-	
-
 	render() {
-		const {error, handleSubmit, fDays } = this.props;
-
-		console.log('days', this.state.days);
-		
+		const {error, handleSubmit } = this.props;		
 
 		return (
 			<Container style={styles.container}>
@@ -102,8 +87,13 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 							component={this.renderInput} 
 							validate={[required]} />
 
-
-
+						<FieldArray name="days" component={renderDays} _this={this} />
+						<Button 
+				onPress={() => this.props.navigation.navigate("Categories", {})} 
+				style={{position:"absolute",right:10,bottom:20,borderRadius:50,backgroundColor:"#00a6ff"}}
+			>
+				<Text> add exercise </Text>
+			</Button>
 						{
 							error && <View padder>
 								<Text style={{color: "red", textAlign: 'center'}}>{error}</Text>
@@ -113,50 +103,11 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 							onPress={handleSubmit(this.addWorkout)}
 							style={{position:"absolute",right:10,bottom:20,borderRadius:50,backgroundColor:"#00a6ff"}}
 						>
-							<Text> + </Text>
+							<Text> Save </Text>
 						</Button>
 					</Form>
-
-
-
-
-						<Tabs renderTabBar={()=> <ScrollableTab />}>
-							<Tab heading="Tab1">
-								<Text>1111</Text>
-							</Tab>
-							<Tab heading="Tab2">
-								<Text>2222</Text>
-							</Tab>
-							<Tab heading="Tab3">
-								<Text>333</Text>
-							</Tab>
-							<Tab heading="Tab4">
-								<Text>4444</Text>
-							</Tab>
-							<Tab heading="Tab5">
-								<Text>555</Text>
-							</Tab>
-						</Tabs>
-
-
-
-
-
-
-
-
 					
 				</Content>
-
-
-				<View style={{position:"absolute",right:10,bottom:20,flex: 1, flexDirection: "row", flexWrap: 'wrap'}}>
-					<Text>Day</Text>
-					<Button 
-						onPress={()=> <Text>1111</Text>}
-						style={{borderRadius:50,backgroundColor:"#ff9052"}}>
-						<Text> + </Text>
-					</Button>
-				</View>
 			</Container>
 		);
 	}
@@ -164,16 +115,32 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 
 
 
-// const renderDays = ({ fields, _this, meta: { error, submitFailed } }) => {
-// 	console.log('fields',fields);
-// 	console.log('_this',_this);
+const renderDays = ({ fields, _this, meta: { error, submitFailed } }) => {
+	console.log('fields',fields);
+	console.log('_this',_this);
 // 	fields.map((day, index) => {
 // 		console.log('day',day);
 // 		return <Text>www</Text>;
 // 	});
-// 	return <Button onPress={fields.push({})}>
-// 			<Text>qqq</Text>
-// 		</Button>;
+	// return <Button onPress={fields.push({})}>
+	// 		<Text>qqq</Text>
+	// 	</Button>;
+	if (fields.length==0){fields.push({})};
+	return	<View>
+				<Button onPress={() => fields.push({})}>
+					<Text>qqq</Text>
+				</Button>
+				
+				{console.log('fields', fields.size, fields.length)
+				}
+				<Tabs renderTabBar={()=> <ScrollableTab />}>
+					{fields.map((day, index) => (
+						<Tab key={"day_"+index} heading="Tab1">
+							<Text>1111</Text>
+						</Tab>
+					))}
+				</Tabs>
+			</View>;
 	
 //     // return <div>
 //     //     <button 
@@ -187,25 +154,14 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 //     //         {submitFailed && error && <span>{error}</span>}
 //     //     </div>
     
-//     //     {fields.map((day, index) => (
-//     //         <div key={"day_"+index} className="relative mt-4">
-//     //             <button
-//     //                 type="button"
-//     //                 title="Remove Day"
-//     //                 onClick={() => fields.remove(index)}
-//     //                 className = "p-5 rounded bg-red-500 hover:bg-red-400 text-white block ml-auto absolute pin-r">
-//     //                 <h3><i className="fas fa-trash-alt fa-lg"></i></h3>
-//     //             </button>
-                
-//     //             <FieldArray name={`${day}.exercises`} component={renderExercises} exercises={exercises} categories={categories} indexDay={index} _this={_this}/>
-                
-//     //         </div>
-//     //     ))}
+
 //     // </div>
-// }
+}
 
 const NewWorkout = reduxForm({
 	form: "newWorkout",
+	destroyOnUnmount: false, // <------ preserve form data
+	forceUnregisterOnUnmount: true, // <------ unregister fields on unmount
 })(NewWorkoutContainer);
 
 // const mapStateToProps = (state, props) => {

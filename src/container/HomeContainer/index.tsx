@@ -28,7 +28,7 @@ export interface Props {
 	workouts: Map<String, Object>;
 	loadWorkoutsUser: () => Action<any>;
 }
-// X4j9WHAuvuMS
+
 export interface State {
 	userId: string;
 }

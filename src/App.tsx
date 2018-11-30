@@ -13,6 +13,7 @@ import Login from "./container/LoginContainer";
 import Home from "./container/HomeContainer";
 import Workout from "./container/WorkoutContainer";
 import NewWorkout from "./container/NewWorkoutContainer";
+import Categories from "./container/CategoriesContainer";
 import BlankPage from "./container/BlankPageContainer";
 import Sidebar from "./container/SidebarContainer";
 import Auth from "./auth";
@@ -50,6 +51,7 @@ const AppUser = StackNavigator(
 		Drawer: { screen: Drawer },
 		Workout: { screen: Workout },
 		NewWorkout: { screen: NewWorkout },
+		Categories: { screen: Categories },
 	},
 	{
 		initialRouteName: "Drawer",
