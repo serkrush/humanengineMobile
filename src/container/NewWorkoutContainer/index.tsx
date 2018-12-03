@@ -15,12 +15,11 @@ import {
 	Right,
 	Form,
 	View,
-	Item, Input, Tab, Tabs, ScrollableTab
+	Item, Input, Tab, Tabs, ScrollableTab, Fab
 } from "native-base";
 
 import styles from '../../stories/screens/Home/styles';
 import { changeWorkout } from '../../models/workouts';
-// import {  TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 import { Field, FieldArray, reduxForm } from "redux-form";
 
 
@@ -32,14 +31,19 @@ export interface Props {
 }
 
 export interface State {
+	_fields: any
 }
 class NewWorkoutContainer extends React.Component<Props, State> {
 	textInput: any;
 	constructor(props: Props) {
 		
 		super(props);
+		this.state = {
+			active: 'true'
+		};
 		this.addWorkout = this.addWorkout.bind(this);
 	}
+
 	renderInput({ input, meta: { touched, error } }) {
 		return (
 			<Item error={error && touched}>
@@ -60,19 +64,14 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 		changeWorkout(data);
 	}
 
-	render() {
-		const {error, handleSubmit } = this.props;		
+	render() {	
 
 		return (
 			<Container style={styles.container}>
 				<Header>
 					<Left>
-						<Button transparent>
-						<Icon
-							active
-							name="menu"
-							onPress={() => this.props.navigation.navigate("DrawerOpen")}
-						/>
+                        <Button transparent onPress={() => this.props.navigation.goBack()}>
+							<Icon name="ios-arrow-back" />
 						</Button>
 					</Left>
 					<Body>
@@ -82,80 +81,60 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 				</Header>
 				<Content>
 					<Form>
-						<Field 
-							name="workoutName" 
-							component={this.renderInput} 
-							validate={[required]} />
-
-						<FieldArray name="days" component={renderDays} _this={this} />
-						<Button 
-				onPress={() => this.props.navigation.navigate("Categories", {})} 
-				style={{position:"absolute",right:10,bottom:20,borderRadius:50,backgroundColor:"#00a6ff"}}
-			>
-				<Text> add exercise </Text>
-			</Button>
-						{
-							error && <View padder>
-								<Text style={{color: "red", textAlign: 'center'}}>{error}</Text>
-							</View>
-						}
-						<Button 
-							onPress={handleSubmit(this.addWorkout)}
-							style={{position:"absolute",right:10,bottom:20,borderRadius:50,backgroundColor:"#00a6ff"}}
-						>
-							<Text> Save </Text>
-						</Button>
-					</Form>
+						<Text>111</Text>
+						{/* <View style={styles.contentPadding}>
+							<Field 
+								name="workoutName" 
+								component={this.renderInput} 
+								validate={[required]} />
+						</View>
+						<FieldArray name="days" component={renderDays} _this={this} /> */}
+					}
 					
+					</Form>
+
 				</Content>
+
+				<View style={{ flex: 1, position:"absolute", bottom:0, right:0 }}>
+					<Fab
+						active={this.state.active}
+						direction="up"
+						containerStyle={{ }}
+						style={{ backgroundColor: '#00a6ff' }}
+						position="bottomRight"
+						onPress={() => this.setState({ active: !this.state.active })}
+					>
+						<Text>+</Text>
+						
+						<Button style={{ backgroundColor: '#ff9052' }} onPress={() => this.setState({_fields: this.state._fields.push({})}) }>
+							<Text style={{position:"absolute", left:-80, color:"#000"}}>{(this.state.active)?"Day":""}</Text>
+							<Text>+</Text>
+						</Button>
+						
+						<Button style={{ backgroundColor: '#ff9052' }} onPress={() => this.props.navigation.navigate("Categories", {})} >
+							<Text style={{position:"absolute", left:-80, color:"#000"}}>{(this.state.active)?"Exercise":""}</Text>
+							<Text>+</Text>
+						</Button>
+					</Fab>
+				</View>
 			</Container>
 		);
 	}
 }
 
 
-
 const renderDays = ({ fields, _this, meta: { error, submitFailed } }) => {
-	console.log('fields',fields);
-	console.log('_this',_this);
-// 	fields.map((day, index) => {
-// 		console.log('day',day);
-// 		return <Text>www</Text>;
-// 	});
-	// return <Button onPress={fields.push({})}>
-	// 		<Text>qqq</Text>
-	// 	</Button>;
+	_this.setState({_fields: fields})
 	if (fields.length==0){fields.push({})};
 	return	<View>
-				<Button onPress={() => fields.push({})}>
-					<Text>qqq</Text>
-				</Button>
-				
-				{console.log('fields', fields.size, fields.length)
-				}
 				<Tabs renderTabBar={()=> <ScrollableTab />}>
 					{fields.map((day, index) => (
-						<Tab key={"day_"+index} heading="Tab1">
-							<Text>1111</Text>
+						<Tab key={"day_"+index} heading={"Day"+(index*1+1*1)} >
+								<Text>1111</Text>
 						</Tab>
 					))}
 				</Tabs>
 			</View>;
-	
-//     // return <div>
-//     //     <button 
-//     //         type="button" 
-//     //         onClick={() => fields.push({})}
-//     //         className = "w-32 py-2 mt-4 rounded bg-orange-500 hover:bg-orange-400 text-white">
-//     //         Add Day
-//     //     </button>
-        
-//     //     <div className="text-red-400">
-//     //         {submitFailed && error && <span>{error}</span>}
-//     //     </div>
-    
-
-//     // </div>
 }
 
 const NewWorkout = reduxForm({
@@ -164,16 +143,4 @@ const NewWorkout = reduxForm({
 	forceUnregisterOnUnmount: true, // <------ unregister fields on unmount
 })(NewWorkoutContainer);
 
-// const mapStateToProps = (state, props) => {
-// 	const { entities } = state;
-// 	const exercises = entities.get('exercises');
-	
-	
-//     return {
-// 		exercises,
-// 		entities,
-//     };
-// }
-
-// export default connect(mapStateToProps, {loadWorkoutsUser})(HomeContainer);
 export default connect(null, {changeWorkout})(NewWorkout);

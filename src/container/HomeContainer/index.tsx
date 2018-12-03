@@ -79,7 +79,7 @@ class HomeContainer extends React.Component<Props, State> {
 				</Body>
 				<Right />
 			</Header>
-			<Content>
+			<Content style={styles.contentPadding}>
 				<Text style={{ fontSize:20, fontWeight: 'bold' }}>My Workouts</Text>
 				{(workoutsUser)?<ViewWorkout navigation={navigation} workouts={workoutsUser} />:null}
 				<Text style={{ fontSize:20, fontWeight: 'bold', marginTop:10 }}>Templates</Text>

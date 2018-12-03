@@ -14,12 +14,13 @@ import {
 	Right,
 	Form,
 	View,
-	Item, Input, Tab, Tabs, ScrollableTab
+	Item, Input, Card, CardItem, ScrollableTab
 } from "native-base";
+import { Image, TouchableOpacity } from 'react-native';
 import { Action } from 'redux';
 import { loadCategories } from '../../models/categories';
 
-// import Workout from "../../models/workouts";
+import Workout from "../../models/workouts";
 
 import styles from '../../stories/screens/Home/styles';
 // import { loadWorkoutExercises } from '../../models/workouts';
@@ -39,12 +40,13 @@ class CategoriesContainer extends React.Component<Props, State> {
 
 	componentDidMount() {
 		const { loadCategories} = this.props;
+		console.log('componentDidMount categories');
+		
 		loadCategories();
 	}
     
 	render() {
 		const { navigation, categories } = this.props;
-		console.log('categories',categories);
 		
 		return (
 			<Container style={styles.container}>
@@ -61,9 +63,25 @@ class CategoriesContainer extends React.Component<Props, State> {
 				</Header>
 				<Content>
                     <Form>
+						<View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
+						{
+							categories && categories.valueSeq().map((c,i)=>{
+								
+								return <TouchableOpacity key={"category_"+i+"_"+Math.random()} style={{width:"50%"}} onPress={() => this.props.navigation.navigate("Exercises", {exercises: c.get('exercises')})}><View><Card>
+								<CardItem cardBody>
+									<Image source={{uri: Workout['mIP'] + '/upload/file?s=categories&f=' + c.get('categoryImg') +'&d=muscle.png'}} style={{height: 125, width: null, flex: 1}}/>
+								</CardItem>
+								<CardItem cardBody>
+									<Text>{c.get('categoryName')}</Text>
+								</CardItem>
+								</Card>
+                            </View></TouchableOpacity>;
+							})
+						}
+						
+						</View>
                         
                     </Form>
-					<Text>Cat</Text>
 
 				</Content>
 			</Container>

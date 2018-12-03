@@ -3,6 +3,7 @@ import Model, { CRUD } from './model';
 import { action } from '../redux/actions';
 import { take, fork } from 'redux-saga/effects';
 // import { Map } from 'immutable';
+import { schema } from 'normalizr';
 
 
 const LOAD_CATEGORIES = 'LOAD_CATEGORIES';
@@ -14,8 +15,11 @@ export const loadCategories = () => action(LOAD_CATEGORIES,  {} );
 class Category extends Model {
 
     constructor() {
-        super('categories');
-        
+        super('categories', {
+            exercises:[
+                new schema.Entity('exercises')
+            ]
+        });
         Model.addSaga(
             this.watchLoad.bind(this),
         )

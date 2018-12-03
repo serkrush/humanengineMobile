@@ -12,8 +12,11 @@ import NavigationService from "./NavigationService";
 import Login from "./container/LoginContainer";
 import Home from "./container/HomeContainer";
 import Workout from "./container/WorkoutContainer";
+import WorkoutStart from "./container/WorkoutStartContainer";
 import NewWorkout from "./container/NewWorkoutContainer";
 import Categories from "./container/CategoriesContainer";
+import Exercises from "./container/ExercisesContainer";
+import ExerciseDescription from "./container/ExerciseDescriptionContainer";
 import BlankPage from "./container/BlankPageContainer";
 import Sidebar from "./container/SidebarContainer";
 import Auth from "./auth";
@@ -50,8 +53,11 @@ const AppUser = StackNavigator(
 		BlankPage: { screen: BlankPage },
 		Drawer: { screen: Drawer },
 		Workout: { screen: Workout },
+		WorkoutStart: { screen: WorkoutStart },
 		NewWorkout: { screen: NewWorkout },
 		Categories: { screen: Categories },
+		Exercises: { screen: Exercises },
+		ExerciseDescription: { screen: ExerciseDescription },
 	},
 	{
 		initialRouteName: "Drawer",

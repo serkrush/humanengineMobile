@@ -4,6 +4,10 @@ const styles: any = StyleSheet.create({
 	container: {
 		backgroundColor: "#FBFAFA",
 	},
+	contentPadding: {
+		paddingLeft: 5,
+		paddingRight: 5,
+	},
 	row: {
 		flex: 1,
 		alignItems: "center",
