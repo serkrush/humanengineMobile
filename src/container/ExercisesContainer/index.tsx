@@ -70,7 +70,7 @@ class ExercisesContainer extends React.Component<Props, State> {
                                     console.log('_exercise',_exercise, _exercise.get('exerciseName'));
                                     
                                         
-                                        return <TouchableOpacity key={"exercise_"+i+"_"+Math.random()} style={{width:"50%"}} onPress={() => this.props.navigation.navigate("ExerciseDescription", {exercise: _exercise})}><View><Card>
+                                        return <TouchableOpacity key={"exercise_"+i+"_"+Math.random()} style={{width:"50%"}} onPress={() => {console.log('click'); this.props.navigation.navigate("ExerciseDescription", {exercise: _exercise})}}><View><Card>
                                             <CardItem cardBody>
                                                 <Image source={{uri: Workout['mIP'] + '/upload/file?s=exercises&f=' + _exercise.get('exerciseImg') +'&d=muscle.png'}} style={{height: 125, width: null, flex: 1}}/>
                                             </CardItem>

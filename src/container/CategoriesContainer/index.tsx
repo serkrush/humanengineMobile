@@ -14,18 +14,18 @@ import {
 	Right,
 	Form,
 	View,
-	Item, Input, Card, CardItem, ScrollableTab
+	Card, CardItem, Input, Item
 } from "native-base";
-import { Image, TouchableOpacity } from 'react-native';
+import { Image, TouchableOpacity, TextInput } from 'react-native';
 import { Action } from 'redux';
 import { loadCategories } from '../../models/categories';
 
 import Workout from "../../models/workouts";
 
 import styles from '../../stories/screens/Home/styles';
-// import { loadWorkoutExercises } from '../../models/workouts';
-// import {  TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
-import { Field, FieldArray, reduxForm } from "redux-form";
+import { Field, reduxForm } from "redux-form";
+
+const required = value => (value ? undefined : "Required");
 
 export interface Props {
 	navigation: any;
@@ -33,10 +33,31 @@ export interface Props {
 	loadCategories: (data) => Action<any>;
 }
 
-export interface State {}
+export interface State {
+	categoryForm: string;
+}
 
 class CategoriesContainer extends React.Component<Props, State> {
-    textInput: any;
+	textInput: any;
+	constructor(props) {
+		super(props);
+		this.state = {
+			categoryForm: "",
+		};
+	}
+
+	renderInput({ input, meta: { touched, error } }) {
+		return (
+			<Item error={error && touched}>
+				<Input
+					ref={c => (this.textInput = c)}
+					placeholder="Category"
+					secureTextEntry={false}
+					{...input}
+				/>
+			</Item>
+		);
+	}
 
 	componentDidMount() {
 		const { loadCategories} = this.props;
@@ -46,7 +67,7 @@ class CategoriesContainer extends React.Component<Props, State> {
 	}
     
 	render() {
-		const { navigation, categories } = this.props;
+		const { categories } = this.props;
 		
 		return (
 			<Container style={styles.container}>
@@ -63,11 +84,18 @@ class CategoriesContainer extends React.Component<Props, State> {
 				</Header>
 				<Content>
                     <Form>
+						<View style={styles.contentPadding}>
+							<Field 
+								name="category" 
+								component={this.renderInput} 
+								validate={[required]} />
+						</View>
+						<Button onPress={(fields) => {console.log('tuk'); fields.push();						}}><Text>tuk</Text></Button>
 						<View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
 						{
 							categories && categories.valueSeq().map((c,i)=>{
 								
-								return <TouchableOpacity key={"category_"+i+"_"+Math.random()} style={{width:"50%"}} onPress={() => this.props.navigation.navigate("Exercises", {exercises: c.get('exercises')})}><View><Card>
+								return <TouchableOpacity key={"category_"+i+"_"+Math.random()} style={{width:"50%"}} onPress={() => {this.setState({categoryForm: 'fields'});this.props.navigation.navigate("Exercises", {exercises: c.get('exercises')})}}><View><Card>
 								<CardItem cardBody>
 									<Image source={{uri: Workout['mIP'] + '/upload/file?s=categories&f=' + c.get('categoryImg') +'&d=muscle.png'}} style={{height: 125, width: null, flex: 1}}/>
 								</CardItem>

@@ -67,7 +67,7 @@ class ExerciseDescriptionContainer extends React.Component<Props, State> {
                         <Text style={{textAlign:"center"}}>{ex.get('exerciseName')}</Text>
                         <Image source={{uri: Workout['mIP'] + '/upload/file?s=exercises&f=' + ex.get('exerciseImg') +'&d=muscle.png'}} style={{height: 200, width: null, flex: 1}}/>
                         <Text>{ex.get('description')}</Text>
-                        <Button style={{marginLeft:"auto",marginRight:"auto"}}>
+                        <Button style={{marginLeft:"auto",marginRight:"auto"}} onPress={() => this.props.navigation.navigate("Sets")}>
                             <Text>Next</Text>
                         </Button>
                     </Form>

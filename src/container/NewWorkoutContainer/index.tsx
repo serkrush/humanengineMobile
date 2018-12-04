@@ -58,8 +58,6 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 	}
 
 	addWorkout(data) {
-		console.log("data", data);
-
 		const { changeWorkout } = this.props;
 		changeWorkout(data);
 	}
@@ -81,16 +79,13 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 				</Header>
 				<Content>
 					<Form>
-						<Text>111</Text>
-						{/* <View style={styles.contentPadding}>
+						<View style={styles.contentPadding}>
 							<Field 
 								name="workoutName" 
 								component={this.renderInput} 
 								validate={[required]} />
 						</View>
-						<FieldArray name="days" component={renderDays} _this={this} /> */}
-					}
-					
+						<FieldArray name="days" component={renderDays} _this={this} />
 					</Form>
 
 				</Content>

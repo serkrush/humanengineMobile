@@ -17,6 +17,7 @@ import NewWorkout from "./container/NewWorkoutContainer";
 import Categories from "./container/CategoriesContainer";
 import Exercises from "./container/ExercisesContainer";
 import ExerciseDescription from "./container/ExerciseDescriptionContainer";
+import Sets from "./container/SetsContainer";
 import BlankPage from "./container/BlankPageContainer";
 import Sidebar from "./container/SidebarContainer";
 import Auth from "./auth";
@@ -58,6 +59,7 @@ const AppUser = StackNavigator(
 		Categories: { screen: Categories },
 		Exercises: { screen: Exercises },
 		ExerciseDescription: { screen: ExerciseDescription },
+		Sets: { screen: Sets },
 	},
 	{
 		initialRouteName: "Drawer",
