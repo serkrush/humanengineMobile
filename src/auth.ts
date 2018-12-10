@@ -82,7 +82,6 @@ class Auth {
     }
 
     static async init(data) {
-        console.log('init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',data);
         
         try {
             await AsyncStorage.setItem("identity", JSON.stringify(data));

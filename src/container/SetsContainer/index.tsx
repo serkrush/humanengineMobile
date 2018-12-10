@@ -43,6 +43,19 @@ class SetsContainer extends React.Component<Props, State> {
 	// 	const { loadCategories} = this.props;
 	// 	loadCategories();
 	// }
+
+	renderInput({ input, meta: { touched, error } }) {
+		return (
+			<Item error={error && touched}>
+				<Input
+					ref={c => (this.textInput = c)}
+					placeholder="Set"
+					secureTextEntry={false}
+					{...input}
+				/>
+			</Item>
+		);
+	}
     
 	render() {
 		// const { navigation, exercises, entities } = this.props;
@@ -63,7 +76,13 @@ class SetsContainer extends React.Component<Props, State> {
 				</Header>
 				<Content>
                     <Form>
-                        <Text>Sets</Text>
+					<View style={styles.contentPadding}>
+						<Field 
+							name="set" 
+							component={this.renderInput} 
+							// validate={[required]} 
+						/>
+					</View>
                     </Form>
 
 				</Content>

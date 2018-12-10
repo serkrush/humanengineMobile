@@ -16,7 +16,7 @@ import {
 	View,
 	Item, Input, Card, CardItem, ScrollableTab
 } from "native-base";
-import { Image, TouchableOpacity } from 'react-native';
+import { Image, TouchableOpacity, TextInput } from 'react-native';
 import { Action } from 'redux';
 // import { loadCategories } from '../../models/categories';
 
@@ -29,9 +29,10 @@ import { Field, FieldArray, reduxForm } from "redux-form";
 import { List } from 'immutable';
 
 export interface Props {
-    navigation: any;
+	navigation: any;
     exercises: Map<String, Object>;
 	entities: any;
+	jsonDays: any;
 }
 
 export interface State {}
@@ -45,8 +46,10 @@ class ExercisesContainer extends React.Component<Props, State> {
 	// }
     
 	render() {
-		const { navigation, exercises, entities } = this.props;
-        const ex = navigation.getParam('exercises', []);
+		const { jsonDays, entities } = this.props;
+		const ex = this.props.navigation.getParam('exercises', []);
+		console.log('ex',ex);
+		
         
 		return (
 			<Container style={styles.container}>
@@ -63,6 +66,12 @@ class ExercisesContainer extends React.Component<Props, State> {
 				</Header>
 				<Content>
                     <Form>
+						<Field
+							component={TextInput}
+							type="text"
+							name="category"
+							value="qweert"
+						/>
                         <View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
                             {
                                 ex && ex.map((e,i)=>{
@@ -70,15 +79,25 @@ class ExercisesContainer extends React.Component<Props, State> {
                                     console.log('_exercise',_exercise, _exercise.get('exerciseName'));
                                     
                                         
-                                        return <TouchableOpacity key={"exercise_"+i+"_"+Math.random()} style={{width:"50%"}} onPress={() => {console.log('click'); this.props.navigation.navigate("ExerciseDescription", {exercise: _exercise})}}><View><Card>
-                                            <CardItem cardBody>
-                                                <Image source={{uri: Workout['mIP'] + '/upload/file?s=exercises&f=' + _exercise.get('exerciseImg') +'&d=muscle.png'}} style={{height: 125, width: null, flex: 1}}/>
-                                            </CardItem>
-                                            <CardItem cardBody>
-                                                <Text>{_exercise.get('exerciseName')}</Text>
-                                            </CardItem>
-                                            </Card>
-                                        </View></TouchableOpacity>;
+										return <TouchableOpacity 
+													key={"exercise_"+i+"_"+Math.random()} 
+													style={{width:"50%"}} 
+													onPress={() => {this.props.navigation.navigate("ExerciseDescription", {
+																															exercise: _exercise,
+																															jsonDays: jsonDays
+																														
+												})}}>
+													<View>
+														<Card>
+															<CardItem cardBody>
+																<Image source={{uri: Workout['mIP'] + '/upload/file?s=exercises&f=' + _exercise.get('exerciseImg') +'&d=muscle.png'}} style={{height: 125, width: null, flex: 1}}/>
+															</CardItem>
+															<CardItem cardBody>
+																<Text>{_exercise.get('exerciseName')}</Text>
+															</CardItem>
+														</Card>
+													</View>
+												</TouchableOpacity>;
                                 })
                             }
                         </View>
@@ -98,13 +117,32 @@ const CategoriesForm = reduxForm({
 })(ExercisesContainer);
 
 const mapStateToProps = (state, props) => {
+	console.log('mapStateToProps');
+
 	const { entities } = state;
 	const exercises = entities.get('exercises');
+	const indexDay = props.navigation.getParam('indexDay', 0);
+	const countDay = props.navigation.getParam('countDay', 0);
+
+	let arrDaysJson= [];
+	let i;
+	for (i=0; i<=countDay; i++){
+		if (i==indexDay){
+			arrDaysJson.push({exercises:[{category: props.navigation.getParam('categoryId', null)}]});
+		} else {
+			arrDaysJson.push({});
+		}
+	}
+	console.log('arrDaysJson',arrDaysJson);
 	
 	
     return {
         exercises,
-        entities
+		entities,
+		jsonDays: arrDaysJson
+		// initialValues: {
+		// 	days:arrDaysJson
+		// }
     };
 }
 

@@ -90,7 +90,7 @@ class LoginForm extends React.Component<Props  & InjectedFormProps<{}, State>> {
 				}
 				<View padder>
 					<Button block onPress={handleSubmit(this.login)}>
-						<Text>Login Max !</Text>
+						<Text>Login</Text>
 					</Button>
 				</View>
 			</Form>

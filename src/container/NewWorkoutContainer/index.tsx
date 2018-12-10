@@ -31,7 +31,8 @@ export interface Props {
 }
 
 export interface State {
-	_fields: any
+	_fields: any,
+	indexDay: number
 }
 class NewWorkoutContainer extends React.Component<Props, State> {
 	textInput: any;
@@ -39,7 +40,8 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 		
 		super(props);
 		this.state = {
-			active: 'true'
+			active: 'true',
+			indexDay: 0
 		};
 		this.addWorkout = this.addWorkout.bind(this);
 	}
@@ -62,7 +64,10 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 		changeWorkout(data);
 	}
 
-	render() {	
+	render() {
+		if (this.state._fields)	{
+		console.log('count',this.state._fields.length);
+		}
 
 		return (
 			<Container style={styles.container}>
@@ -106,7 +111,13 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 							<Text>+</Text>
 						</Button>
 						
-						<Button style={{ backgroundColor: '#ff9052' }} onPress={() => this.props.navigation.navigate("Categories", {})} >
+						<Button 
+							style={{ backgroundColor: '#ff9052' }} 
+							onPress={() => this.props.navigation.navigate("Categories", {
+																							indexDay: this.state.indexDay,
+																							countDay: (this.state._fields)?this.state._fields.length:0
+																						})} 
+						>
 							<Text style={{position:"absolute", left:-80, color:"#000"}}>{(this.state.active)?"Exercise":""}</Text>
 							<Text>+</Text>
 						</Button>
@@ -119,13 +130,13 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 
 
 const renderDays = ({ fields, _this, meta: { error, submitFailed } }) => {
-	_this.setState({_fields: fields})
+	_this.setState({_fields: fields});
 	if (fields.length==0){fields.push({})};
 	return	<View>
-				<Tabs renderTabBar={()=> <ScrollableTab />}>
+				<Tabs renderTabBar={()=> <ScrollableTab />} onChangeTab={({ i, ref }) => _this.setState({indexDay: i})}>
 					{fields.map((day, index) => (
-						<Tab key={"day_"+index} heading={"Day"+(index*1+1*1)} >
-								<Text>1111</Text>
+						<Tab key={"day_"+index} heading={"Day"+(index*1+1*1)}  >
+								<Text>Workout content</Text>
 						</Tab>
 					))}
 				</Tabs>

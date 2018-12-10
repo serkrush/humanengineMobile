@@ -14,16 +14,16 @@ import {
 	Right,
 	Form,
 	View,
-	Card, CardItem, Input, Item
+	Card, CardItem
 } from "native-base";
-import { Image, TouchableOpacity, TextInput } from 'react-native';
+import { Image, TouchableOpacity } from 'react-native';
 import { Action } from 'redux';
 import { loadCategories } from '../../models/categories';
 
 import Workout from "../../models/workouts";
 
 import styles from '../../stories/screens/Home/styles';
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, change } from "redux-form";
 
 const required = value => (value ? undefined : "Required");
 
@@ -34,7 +34,6 @@ export interface Props {
 }
 
 export interface State {
-	categoryForm: string;
 }
 
 class CategoriesContainer extends React.Component<Props, State> {
@@ -42,21 +41,8 @@ class CategoriesContainer extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
-			categoryForm: "",
+			valInput: 'aaa'
 		};
-	}
-
-	renderInput({ input, meta: { touched, error } }) {
-		return (
-			<Item error={error && touched}>
-				<Input
-					ref={c => (this.textInput = c)}
-					placeholder="Category"
-					secureTextEntry={false}
-					{...input}
-				/>
-			</Item>
-		);
 	}
 
 	componentDidMount() {
@@ -84,26 +70,34 @@ class CategoriesContainer extends React.Component<Props, State> {
 				</Header>
 				<Content>
                     <Form>
-						<View style={styles.contentPadding}>
-							<Field 
-								name="category" 
-								component={this.renderInput} 
-								validate={[required]} />
-						</View>
-						<Button onPress={(fields) => {console.log('tuk'); fields.push();						}}><Text>tuk</Text></Button>
 						<View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
 						{
 							categories && categories.valueSeq().map((c,i)=>{
 								
-								return <TouchableOpacity key={"category_"+i+"_"+Math.random()} style={{width:"50%"}} onPress={() => {this.setState({categoryForm: 'fields'});this.props.navigation.navigate("Exercises", {exercises: c.get('exercises')})}}><View><Card>
-								<CardItem cardBody>
-									<Image source={{uri: Workout['mIP'] + '/upload/file?s=categories&f=' + c.get('categoryImg') +'&d=muscle.png'}} style={{height: 125, width: null, flex: 1}}/>
-								</CardItem>
-								<CardItem cardBody>
-									<Text>{c.get('categoryName')}</Text>
-								</CardItem>
-								</Card>
-                            </View></TouchableOpacity>;
+								return <TouchableOpacity 
+											key={"category_"+i+"_"+Math.random()} 
+											style={{width:"50%"}} 
+											onPress={() => {
+															this.props.navigation.navigate("Exercises", {
+																											exercises: c.get('exercises'), 
+																											categoryId: c.get('id'),
+																											indexDay: this.props.navigation.getParam('indexDay', 0),
+																											countDay: this.props.navigation.getParam('countDay', 0)
+																										}
+																							)
+															}
+													}>
+											<View>
+												<Card>
+													<CardItem cardBody>
+														<Image source={{uri: Workout['mIP'] + '/upload/file?s=categories&f=' + c.get('categoryImg') +'&d=muscle.png'}} style={{height: 125, width: null, flex: 1}}/>
+													</CardItem>
+													<CardItem cardBody>
+														<Text>{c.get('categoryName')}</Text>
+													</CardItem>
+												</Card>
+											</View>
+										</TouchableOpacity>;
 							})
 						}
 						
@@ -130,8 +124,8 @@ const mapStateToProps = (state, props) => {
 	
     return {
 		categories,
-		entities,
+		entities
     };
 }
 
-export default connect(mapStateToProps, {loadCategories})(CategoriesForm);
+export default connect(mapStateToProps, {loadCategories, change})(CategoriesForm);
