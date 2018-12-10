@@ -67,7 +67,15 @@ class ExerciseDescriptionContainer extends React.Component<Props, State> {
                         <Text style={{textAlign:"center"}}>{ex.get('exerciseName')}</Text>
                         <Image source={{uri: Workout['mIP'] + '/upload/file?s=exercises&f=' + ex.get('exerciseImg') +'&d=muscle.png'}} style={{height: 200, width: null, flex: 1}}/>
                         <Text>{ex.get('description')}</Text>
-                        <Button style={{marginLeft:"auto",marginRight:"auto"}} onPress={() => this.props.navigation.navigate("Sets")}>
+						<Button 
+							style={{marginLeft:"auto",marginRight:"auto"}} 
+							onPress={() => this.props.navigation.navigate("Sets",{
+								indexDay: this.props.navigation.getParam('indexDay', 0),
+								countDay: this.props.navigation.getParam('countDay', 0),
+								categoryId: this.props.navigation.getParam('categoryId', null),
+								exerciseId: ex.get('id'),
+							})}
+						>
                             <Text>Next</Text>
                         </Button>
                     </Form>
@@ -84,57 +92,5 @@ const CategoriesForm = reduxForm({
 	forceUnregisterOnUnmount: true, // <------ unregister fields on unmount
 })(ExerciseDescriptionContainer);
 
-const mapStateToProps = (state, props) => {
 
-	// const { entities } = state;
-	// const exercises = entities.get('exercises');
-	// const indexDay = props.navigation.getParam('indexDay', 0);
-	// const countDay = props.navigation.getParam('countDay', 0);
-
-	// let arrDaysJson= [];
-	// let i;
-	// for (i=0; i<=countDay; i++){
-	// 	if (i==indexDay){
-	// 		arrDaysJson.push({exercises:[{category: props.navigation.getParam('categoryId', null)}]});
-	// 	} else {
-	// 		arrDaysJson.push({});
-	// 	}
-	// }
-	// console.log('arrDaysJson',arrDaysJson);
-	console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-	
-	
-	
-	
-    return {
-		initialValues: {
-			est: '1111',
-			// days:[
-			// 	{
-			// 		exercises:[
-			// 			{
-			// 				exercise: '111'
-			// 			}
-			// 		]
-			// 	},
-			// 	{
-			// 		exercises:[
-			// 			{
-			// 				exercise: '2222'
-			// 			}
-			// 		]
-			// 	},
-			// 	{
-			// 		exercises:[
-			// 			{
-			// 				exercise: '333'
-			// 			}
-			// 		]
-			// 	},
-			// ]
-		}
-	
-    };
-}
-
-export default connect(mapStateToProps, null)(CategoriesForm);
+export default connect(null, null)(CategoriesForm);

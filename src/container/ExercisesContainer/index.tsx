@@ -32,7 +32,7 @@ export interface Props {
 	navigation: any;
     exercises: Map<String, Object>;
 	entities: any;
-	jsonDays: any;
+	// jsonDays: any;
 }
 
 export interface State {}
@@ -46,7 +46,7 @@ class ExercisesContainer extends React.Component<Props, State> {
 	// }
     
 	render() {
-		const { jsonDays, entities } = this.props;
+		const { /*jsonDays,*/ entities } = this.props;
 		const ex = this.props.navigation.getParam('exercises', []);
 		console.log('ex',ex);
 		
@@ -84,7 +84,11 @@ class ExercisesContainer extends React.Component<Props, State> {
 													style={{width:"50%"}} 
 													onPress={() => {this.props.navigation.navigate("ExerciseDescription", {
 																															exercise: _exercise,
-																															jsonDays: jsonDays
+																															indexDay: this.props.navigation.getParam('indexDay', 0),
+																															countDay: this.props.navigation.getParam('countDay', 0),
+																															categoryId: this.props.navigation.getParam('categoryId', null),
+																															// selectExercise: _exercise.get('id'),
+																															// jsonDays: jsonDays
 																														
 												})}}>
 													<View>
@@ -121,25 +125,25 @@ const mapStateToProps = (state, props) => {
 
 	const { entities } = state;
 	const exercises = entities.get('exercises');
-	const indexDay = props.navigation.getParam('indexDay', 0);
-	const countDay = props.navigation.getParam('countDay', 0);
+	// const indexDay = props.navigation.getParam('indexDay', 0);
+	// const countDay = props.navigation.getParam('countDay', 0);
 
-	let arrDaysJson= [];
-	let i;
-	for (i=0; i<=countDay; i++){
-		if (i==indexDay){
-			arrDaysJson.push({exercises:[{category: props.navigation.getParam('categoryId', null)}]});
-		} else {
-			arrDaysJson.push({});
-		}
-	}
-	console.log('arrDaysJson',arrDaysJson);
+	// let arrDaysJson= [];
+	// let i;
+	// for (i=0; i<=countDay; i++){
+	// 	if (i==indexDay){
+	// 		arrDaysJson.push({exercises:[{category: props.navigation.getParam('categoryId', null)}]});
+	// 	} else {
+	// 		arrDaysJson.push({});
+	// 	}
+	// }
+	// console.log('arrDaysJson',arrDaysJson);
 	
 	
     return {
         exercises,
 		entities,
-		jsonDays: arrDaysJson
+		// jsonDays: arrDaysJson
 		// initialValues: {
 		// 	days:arrDaysJson
 		// }

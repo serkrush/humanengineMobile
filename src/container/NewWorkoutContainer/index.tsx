@@ -131,14 +131,21 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 
 const renderDays = ({ fields, _this, meta: { error, submitFailed } }) => {
 	_this.setState({_fields: fields});
+	
+
 	if (fields.length==0){fields.push({})};
 	return	<View>
 				<Tabs renderTabBar={()=> <ScrollableTab />} onChangeTab={({ i, ref }) => _this.setState({indexDay: i})}>
-					{fields.map((day, index) => (
-						<Tab key={"day_"+index} heading={"Day"+(index*1+1*1)}  >
+					{
+						fields.map((day, index) => (
+							<Tab 
+								key={"day_"+index}
+								heading={"Day"+(index*1+1*1)}
+							>
 								<Text>Workout content</Text>
-						</Tab>
-					))}
+							</Tab>
+						))
+					}
 				</Tabs>
 			</View>;
 }
