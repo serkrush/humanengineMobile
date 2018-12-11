@@ -41,13 +41,15 @@ export interface State {
 }
 
 class SetsContainer extends React.Component<Props, State> {
-	textInput: any;
+	
 	
 	constructor(props) {
 		super(props);
 		this.state = {
 			countSets: 0
 		};
+
+		this.loopSets = this.loopSets.bind(this);
 	}
 
 	// componentDidMount() {
@@ -67,10 +69,21 @@ class SetsContainer extends React.Component<Props, State> {
 			</Item>
 		);
 	}
+
+	loopSets(countSets){
+		console.log('loopSets',countSets,this.state.countSets);
+		let vLoopSets = [];
+		let i = 0;
+		for (i=0;i<=countSets;i++){
+			vLoopSets.push(<View key = {i}><Text>loop</Text></View>);
+		}
+		return vLoopSets;
+		
+	}
     
 	render() {
 		// const { navigation, exercises, entities } = this.props;
-		// const ex = navigation.getParam('exercises', []);
+		// const ex = navigation.getParam('exercises', []); 
 		console.log('this.state.countSets',this.state.countSets);
 		
         
@@ -90,23 +103,24 @@ class SetsContainer extends React.Component<Props, State> {
 				<Content>
                     <Form>
 						<View style={styles.contentPadding}>
+							{ this.loopSets(this.state.countSets) }
 							<Button 
-								onPress={()=>{let newCountSets =this.state.countSets+1*1; this.state.countSets=newCountSets}}
+								onPress={()=>{/*let newCountSets =this.state.countSets+1*1;*/ /*this.state.countSets=this.state.countSets+1*/ this.setState({ countSets: this.state.countSets+1 })}}
 							>
 								<Text>Add</Text>
 							</Button>
 							<Field 
-								name="days[0].exercises[0].sets[0].set" 
+								name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[0].sets[0].set" }
 								component={this.renderInput} 
 								validate={[required]} 
 							/>
 							<Field 
-								name="days[0].exercises[0].sets[0].weight" 
+								name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[0].sets[0].weight" }
 								component={this.renderInput} 
 								validate={[required]} 
 							/>
 							<Field 
-								name="days[0].exercises[0].sets[0].reps" 
+								name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[0].sets[0].reps" }
 								component={this.renderInput} 
 								validate={[required]} 
 							/>
@@ -125,41 +139,6 @@ const CategoriesForm = reduxForm({
 	forceUnregisterOnUnmount: true, // <------ unregister fields on unmount
 })(SetsContainer);
 
-const mapStateToProps = (state, props) => {
-	console.log('mapStateToProps');
 
-	const { entities } = state;
-	const indexDay = props.navigation.getParam('indexDay', 0);
-	const countDay = props.navigation.getParam('countDay', 0);
 
-	console.log('indexDay', indexDay, countDay);
-	
-
-	let arrDaysJson= [];
-	let i;
-	for (i=0; i<countDay; i++){
-		if (i==indexDay){
-			arrDaysJson.push({
-							exercises:[
-								{
-									category: props.navigation.getParam('categoryId', null),
-									exercise: props.navigation.getParam('exerciseId', null),
-								}
-							]});
-		} else {
-			arrDaysJson.push({});
-		}
-	}
-	console.log('arrDaysJson',arrDaysJson);
-	
-	
-    return {
-		entities,
-		// jsonDays: arrDaysJson
-		initialValues: {
-			days:arrDaysJson
-		}
-    };
-}
-
-export default connect(mapStateToProps, null)(CategoriesForm);
+export default connect(null, null)(CategoriesForm);

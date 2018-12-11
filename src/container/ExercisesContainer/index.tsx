@@ -14,9 +14,9 @@ import {
 	Right,
 	Form,
 	View,
-	Item, Input, Card, CardItem, ScrollableTab
+	Item, Input, Card, CardItem, Radio
 } from "native-base";
-import { Image, TouchableOpacity, TextInput } from 'react-native';
+import { Image, TouchableOpacity } from 'react-native';
 import { Action } from 'redux';
 // import { loadCategories } from '../../models/categories';
 
@@ -35,21 +35,41 @@ export interface Props {
 	// jsonDays: any;
 }
 
-export interface State {}
+export interface State {
+	selected: string,
+}
 
 class ExercisesContainer extends React.Component<Props, State> {
-    textInput: any;
+	
+	constructor(props) {
+		super(props);
+		this.state = {
+			selected: ''
+		};
+		this.RadioButton = this.RadioButton.bind(this);
+	}
 
-	// componentDidMount() {
-	// 	const { loadCategories} = this.props;
-	// 	loadCategories();
-	// }
+	RadioButton({ selected, val, input, changeState, indexDay, exercise }) {
+		return (
+			<Radio
+				{...input}
+				onPress={() => {input.onChange(val); changeState(); this.props.navigation.navigate("ExerciseDescription", {exercise: exercise, indexDay:indexDay})  }}
+				selected={selected === val}
+				style={{position:"absolute",height:'100%',width:'100%',opacity:0}}
+				// color="transparent"
+			/>
+		)
+	}
+
+	onPress (selected: string) {
+		this.setState({
+			selected
+		})
+	}
     
 	render() {
-		const { /*jsonDays,*/ entities } = this.props;
+		const { entities } = this.props;
 		const ex = this.props.navigation.getParam('exercises', []);
-		console.log('ex',ex);
-		
         
 		return (
 			<Container style={styles.container}>
@@ -66,12 +86,6 @@ class ExercisesContainer extends React.Component<Props, State> {
 				</Header>
 				<Content>
                     <Form>
-						<Field
-							component={TextInput}
-							type="text"
-							name="category"
-							value="qweert"
-						/>
                         <View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
                             {
                                 ex && ex.map((e,i)=>{
@@ -82,15 +96,16 @@ class ExercisesContainer extends React.Component<Props, State> {
 										return <TouchableOpacity 
 													key={"exercise_"+i+"_"+Math.random()} 
 													style={{width:"50%"}} 
-													onPress={() => {this.props.navigation.navigate("ExerciseDescription", {
-																															exercise: _exercise,
-																															indexDay: this.props.navigation.getParam('indexDay', 0),
-																															countDay: this.props.navigation.getParam('countDay', 0),
-																															categoryId: this.props.navigation.getParam('categoryId', null),
-																															// selectExercise: _exercise.get('id'),
-																															// jsonDays: jsonDays
+												// 	onPress={() => {this.props.navigation.navigate("ExerciseDescription", {
+												// 																			exercise: _exercise,
+												// 																			indexDay: this.props.navigation.getParam('indexDay', 0),
+												// 																			countDay: this.props.navigation.getParam('countDay', 0),
+												// 																			categoryId: this.props.navigation.getParam('categoryId', null),
+												// 																			// selectExercise: _exercise.get('id'),
+												// 																			// jsonDays: jsonDays
 																														
-												})}}>
+												// })}}
+												>
 													<View>
 														<Card>
 															<CardItem cardBody>
@@ -100,6 +115,16 @@ class ExercisesContainer extends React.Component<Props, State> {
 																<Text>{_exercise.get('exerciseName')}</Text>
 															</CardItem>
 														</Card>
+														<Field
+															name={'days[' + this.props.navigation.getParam('indexDay', 0) + '].exercises[0].exercise'}
+															component={this.RadioButton}
+															label={_exercise.get('exerciseName')}
+															val={_exercise.get('id')}
+															selected={this.state.selected}
+															indexDay = { this.props.navigation.getParam('indexDay', 0) }
+															exercise = { _exercise }
+															changeState={() => this.onPress(_exercise.get('id'))}
+														/>
 													</View>
 												</TouchableOpacity>;
                                 })
@@ -125,28 +150,11 @@ const mapStateToProps = (state, props) => {
 
 	const { entities } = state;
 	const exercises = entities.get('exercises');
-	// const indexDay = props.navigation.getParam('indexDay', 0);
-	// const countDay = props.navigation.getParam('countDay', 0);
-
-	// let arrDaysJson= [];
-	// let i;
-	// for (i=0; i<=countDay; i++){
-	// 	if (i==indexDay){
-	// 		arrDaysJson.push({exercises:[{category: props.navigation.getParam('categoryId', null)}]});
-	// 	} else {
-	// 		arrDaysJson.push({});
-	// 	}
-	// }
-	// console.log('arrDaysJson',arrDaysJson);
 	
 	
     return {
         exercises,
 		entities,
-		// jsonDays: arrDaysJson
-		// initialValues: {
-		// 	days:arrDaysJson
-		// }
     };
 }
 

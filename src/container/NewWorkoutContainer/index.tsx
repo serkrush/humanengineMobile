@@ -65,10 +65,7 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 	}
 
 	render() {
-		if (this.state._fields)	{
-		console.log('count',this.state._fields.length);
-		}
-
+		
 		return (
 			<Container style={styles.container}>
 				<Header>
@@ -131,6 +128,9 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 
 const renderDays = ({ fields, _this, meta: { error, submitFailed } }) => {
 	_this.setState({_fields: fields});
+
+	console.log('fields',fields);
+	
 	
 
 	if (fields.length==0){fields.push({})};

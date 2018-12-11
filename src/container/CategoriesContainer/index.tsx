@@ -14,7 +14,7 @@ import {
 	Right,
 	Form,
 	View,
-	Card, CardItem
+	Card, CardItem, Radio
 } from "native-base";
 import { Image, TouchableOpacity } from 'react-native';
 import { Action } from 'redux';
@@ -25,6 +25,8 @@ import Workout from "../../models/workouts";
 import styles from '../../stories/screens/Home/styles';
 import { Field, reduxForm, change } from "redux-form";
 
+// import { RadioButton } from './RadioButton'
+
 const required = value => (value ? undefined : "Required");
 
 export interface Props {
@@ -34,15 +36,35 @@ export interface Props {
 }
 
 export interface State {
+	selected: string,
 }
 
 class CategoriesContainer extends React.Component<Props, State> {
-	textInput: any;
+	
 	constructor(props) {
 		super(props);
 		this.state = {
-			valInput: 'aaa'
+			selected: ''
 		};
+		this.RadioButton = this.RadioButton.bind(this);
+	}
+
+	RadioButton({ selected, val, input, changeState, indexDay, exercises }) {
+		return (
+			<Radio
+				{...input}
+				onPress={() => {input.onChange(val); changeState(); this.props.navigation.navigate("Exercises", {exercises: exercises, indexDay:indexDay})  }}
+				selected={selected === val}
+				style={{position:"absolute",height:'100%',width:'100%',opacity:0}}
+				// color="transparent"
+			/>
+		)
+	}
+
+	onPress (selected: string) {
+		this.setState({
+			selected
+		})
 	}
 
 	componentDidMount() {
@@ -53,7 +75,7 @@ class CategoriesContainer extends React.Component<Props, State> {
 	}
     
 	render() {
-		const { categories } = this.props;
+		const { categories } = this.props;		
 		
 		return (
 			<Container style={styles.container}>
@@ -73,22 +95,23 @@ class CategoriesContainer extends React.Component<Props, State> {
 						<View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
 						{
 							categories && categories.valueSeq().map((c,i)=>{
-								
-								return <TouchableOpacity 
+
+
+								return  <TouchableOpacity 
 											key={"category_"+i+"_"+Math.random()} 
-											style={{width:"50%"}} 
-											onPress={() => {
-															this.props.navigation.navigate("Exercises", {
-																											exercises: c.get('exercises'), 
-																											categoryId: c.get('id'),
-																											indexDay: this.props.navigation.getParam('indexDay', 0),
-																											countDay: this.props.navigation.getParam('countDay', 0)
-																										}
-																							)
-															}
-													}>
-											<View>
-												<Card>
+											style={{width:"50%",position:"relative"}} 
+											// onPress={() => {
+											// 				this.props.navigation.navigate("Exercises", {
+											// 																exercises: c.get('exercises'), 
+											
+											// 																indexDay: this.props.navigation.getParam('indexDay', 0),
+											// 																countDay: this.props.navigation.getParam('countDay', 0)
+											// 															}
+											// 												)
+											// 				}
+											// 		}
+										><View>
+											<Card>
 													<CardItem cardBody>
 														<Image source={{uri: Workout['mIP'] + '/upload/file?s=categories&f=' + c.get('categoryImg') +'&d=muscle.png'}} style={{height: 125, width: null, flex: 1}}/>
 													</CardItem>
@@ -96,8 +119,42 @@ class CategoriesContainer extends React.Component<Props, State> {
 														<Text>{c.get('categoryName')}</Text>
 													</CardItem>
 												</Card>
-											</View>
-										</TouchableOpacity>;
+									<Field
+										
+										name={'days[' + this.props.navigation.getParam('indexDay', 0) + '].exercises[0].category'}
+										component={this.RadioButton}
+										label={c.get('categoryName')}
+										val={c.get('id')}
+										selected={this.state.selected}
+										indexDay = { this.props.navigation.getParam('indexDay', 0) }
+										exercises = { c.get('exercises') }
+										changeState={() => this.onPress(c.get('id'))}
+									/>
+								</View></TouchableOpacity>;
+								// return <TouchableOpacity 
+								// 			key={"category_"+i+"_"+Math.random()} 
+								// 			style={{width:"50%"}} 
+								// 			onPress={() => {
+								// 							this.props.navigation.navigate("Exercises", {
+								// 																			exercises: c.get('exercises'), 
+								// 																			categoryId: c.get('id'),
+								// 																			indexDay: this.props.navigation.getParam('indexDay', 0),
+								// 																			countDay: this.props.navigation.getParam('countDay', 0)
+								// 																		}
+								// 															)
+								// 							}
+								// 					}>
+								// 			<View>
+								// 				<Card>
+								// 					<CardItem cardBody>
+								// 						<Image source={{uri: Workout['mIP'] + '/upload/file?s=categories&f=' + c.get('categoryImg') +'&d=muscle.png'}} style={{height: 125, width: null, flex: 1}}/>
+								// 					</CardItem>
+								// 					<CardItem cardBody>
+								// 						<Text>{c.get('categoryName')}</Text>
+								// 					</CardItem>
+								// 				</Card>
+								// 			</View>
+								// 		</TouchableOpacity>;
 							})
 						}
 						
