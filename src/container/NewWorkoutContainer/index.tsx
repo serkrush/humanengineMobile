@@ -15,11 +15,11 @@ import {
 	Right,
 	Form,
 	View,
-	Item, Input, Tab, Tabs, ScrollableTab, Fab
+	Item, Input, Tab, Tabs, ScrollableTab, Fab, Textarea
 } from "native-base";
 
 import styles from '../../stories/screens/Home/styles';
-import { changeWorkout } from '../../models/workouts';
+// import { saveWorkouts } from '../../models/workouts';
 import { Field, FieldArray, reduxForm } from "redux-form";
 
 
@@ -27,7 +27,7 @@ const required = value => (value ? undefined : "Required");
 
 export interface Props {
 	navigation: any;
-	changeWorkout: (data) => Action;
+	// saveWorkouts: (data) => Action;
 }
 
 export interface State {
@@ -43,7 +43,7 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 			active: 'true',
 			indexDay: 0
 		};
-		this.addWorkout = this.addWorkout.bind(this);
+		// this.addWorkout = this.addWorkout.bind(this);
 	}
 
 	renderInput({ input, meta: { touched, error } }) {
@@ -59,9 +59,17 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 		);
 	}
 
-	addWorkout(data) {
-		const { changeWorkout } = this.props;
-		changeWorkout(data);
+	renderTextarea({ textarea, meta: { touched, error } }){
+		return (
+			<Item error={error && touched}>
+				<Textarea
+					ref={c => (this.textInput = c)}
+					placeholder="Description"
+					secureTextEntry={false}
+					{...textarea}
+				/>
+			</Item>
+		);
 	}
 
 	render() {
@@ -75,7 +83,7 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 						</Button>
 					</Left>
 					<Body>
-						<Title>Workout</Title>
+						<Title>Training App</Title>
 					</Body>
 					<Right />
 				</Header>
@@ -85,6 +93,12 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 							<Field 
 								name="workoutName" 
 								component={this.renderInput} 
+								validate={[required]} />
+						</View>
+						<View style={styles.contentPadding}>
+							<Field 
+								name="description" 
+								component={this.renderTextarea} 
 								validate={[required]} />
 						</View>
 						<FieldArray name="days" component={renderDays} _this={this} />
@@ -129,10 +143,6 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 const renderDays = ({ fields, _this, meta: { error, submitFailed } }) => {
 	_this.setState({_fields: fields});
 
-	console.log('fields',fields);
-	
-	
-
 	if (fields.length==0){fields.push({})};
 	return	<View>
 				<Tabs renderTabBar={()=> <ScrollableTab />} onChangeTab={({ i, ref }) => _this.setState({indexDay: i})}>
@@ -156,4 +166,4 @@ const NewWorkout = reduxForm({
 	forceUnregisterOnUnmount: true, // <------ unregister fields on unmount
 })(NewWorkoutContainer);
 
-export default connect(null, {changeWorkout})(NewWorkout);
+export default connect(null, null)(NewWorkout);

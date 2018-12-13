@@ -7,8 +7,9 @@ import { schema } from 'normalizr';
 const LOAD_WORKOUTS_USER = "LOAD_WORKOUTS_USER";
 const FETCH_WORKOUTS = "FETCH_WORKOUTS";
 const FIND_BY_ID = "FIND_BY_ID";
-const CHANGE_WORKOUTS = "CHANGE_WORKOUTS";
+// const CHANGE_WORKOUTS = "CHANGE_WORKOUTS";
 const WORKOUT_EXERCISES = "WORKOUT_EXERCISES";
+const SAVE_WORKOUTS = 'SAVE_WORKOUTS';
 
 export const ITEMS_PER_PAGE = 25;
 
@@ -16,7 +17,10 @@ export const loadWorkoutsUser = () => action(LOAD_WORKOUTS_USER,  {} );
 export const loadWorkoutExercises = ( data )  => action(WORKOUT_EXERCISES, data);
 export const fetchWorkouts = ( params ) => action(FETCH_WORKOUTS, params );
 export const findById = ( id )  => action(FIND_BY_ID, { id });
-export const changeWorkout = ( data )  => action(CHANGE_WORKOUTS, data);
+// export const changeWorkout = ( data )  => action(CHANGE_WORKOUTS, data);
+export const saveWorkouts = ( data )  => action(SAVE_WORKOUTS, data);
+
+//newWorkout
 
 class Workout extends Model {
     constructor() {
@@ -39,17 +43,30 @@ class Workout extends Model {
             this.watchLoadWorkoutExercises.bind(this),
             this.whatchFetchWorkouts.bind(this),
             this.findById.bind(this),
-            this.watchChangeWorkout.bind(this),
+            // this.watchChangeWorkout.bind(this),
+            this.watchSaveWorkouts.bind(this),
         );
     }
 
-    public * watchChangeWorkout() {
-        const func = this.request("/workout", {method: "PUT", crud: CRUD.UPDATE}).bind(this);
-        while (true) {
-            const data = yield take(CHANGE_WORKOUTS);
+
+    public * watchSaveWorkouts() {
+        console.log('start watchSaveWorkouts');
+        const func = this.request('/workout', {method: 'PUT', crud:CRUD.UPDATE}).bind(this);
+        while(true) {
+            const data = yield take(SAVE_WORKOUTS);
+            console.log('after suga SAVE_WORKOUTS');
+            
             yield fork(func, data);
         }
     }
+
+    // public * watchChangeWorkout() {
+    //     const func = this.request("/workout", {method: "PUT", crud: CRUD.UPDATE}).bind(this);
+    //     while (true) {
+    //         const data = yield take(CHANGE_WORKOUTS);
+    //         yield fork(func, data);
+    //     }
+    // }
 
     public * watchLoadWorkoutsUser() {
 
@@ -57,6 +74,8 @@ class Workout extends Model {
 
         while (true) {
             yield take(LOAD_WORKOUTS_USER);
+            console.log('after suga LOAD_WORKOUTS_USER');
+            
             yield call(this.request("/workout/public", {method: "POST", crud: CRUD.READ}).bind(this));
             yield call(func);
         }

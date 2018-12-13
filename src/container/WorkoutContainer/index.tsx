@@ -37,18 +37,16 @@ class WorkoutContainer extends React.Component<Props, State> {
 	render() {
 		const { navigation, exercises, entities } = this.props;
 		const workout = navigation.getParam('workout', []);
+		console.log('workout',workout);
+		
 		const days = workout.get('days');
 
 		return (
 			<Container style={styles.container}>
 				<Header>
 					<Left>
-						<Button transparent>
-						<Icon
-							active
-							name="menu"
-							onPress={() => this.props.navigation.navigate("DrawerOpen")}
-						/>
+                        <Button transparent onPress={() => this.props.navigation.goBack()}>
+							<Icon name="ios-arrow-back" />
 						</Button>
 					</Left>
 					<Body>
@@ -56,6 +54,7 @@ class WorkoutContainer extends React.Component<Props, State> {
 					</Body>
 					<Right />
 				</Header>
+				
 				<Content>
 					<View style={{position:'relative',height: 250}}>
 						<Image 
@@ -84,7 +83,6 @@ class WorkoutContainer extends React.Component<Props, State> {
 											return <View key={"exercise_"+e+"_"+Math.random()}>
 												{
 													exercise && exercise.size>0 && exercise.map((ex, ei)=>{
-														console.log('ex2', ex.get('sets'));
 														let _set = 0;
 														let _rep = 0;
 														let _rm = 0;

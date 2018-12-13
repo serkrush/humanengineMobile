@@ -19,8 +19,9 @@ import {
 import { Image, TouchableOpacity } from 'react-native';
 import { Action } from 'redux';
 // import { loadCategories } from '../../models/categories';
+import { saveWorkouts } from "../../models/workouts";
 
-import Workout from "../../models/workouts";
+// import {Workout} from "../../models/workouts";
 
 import styles from '../../stories/screens/Home/styles';
 // import { loadWorkoutExercises } from '../../models/workouts';
@@ -32,7 +33,7 @@ const required = value => (value ? undefined : "Required");
 
 export interface Props {
     navigation: any;
-    // exercises: Map<String, Object>;
+	saveWorkouts: (data) => Action;
 	// entities: any;
 }
 
@@ -50,12 +51,26 @@ class SetsContainer extends React.Component<Props, State> {
 		};
 
 		this.loopSets = this.loopSets.bind(this);
+		this.newWorkout = this.newWorkout.bind(this);
 	}
 
-	// componentDidMount() {
-	// 	const { loadCategories} = this.props;
-	// 	loadCategories();
-	// }
+	newWorkout(data) {
+		console.log("data", data);
+
+		const { saveWorkouts } = this.props;
+		saveWorkouts(data);
+
+		// if (valid) {
+		// 	//this.props.navigation.navigate("Drawer");
+		// } else {
+		// 	Toast.show({
+		// 		text: "Enter Valid Username & password!",
+		// 		duration: 2000,
+		// 		position: "top",
+		// 		textStyle: { textAlign: "center" },
+		// 	});
+		// }
+	}
 
 	renderInput({ input, meta: { touched, error } }) {
 		return (
@@ -75,14 +90,32 @@ class SetsContainer extends React.Component<Props, State> {
 		let vLoopSets = [];
 		let i = 0;
 		for (i=0;i<=countSets;i++){
-			vLoopSets.push(<View key = {i}><Text>loop</Text></View>);
+			vLoopSets.push(<View key = {i}>
+								<Field 
+									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[0].sets[" + i + "].set" }
+									component={this.renderInput} 
+									validate={[required]} 
+								/>
+								<Field 
+									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[0].sets[" + i + "].weight" }
+									component={this.renderInput} 
+									validate={[required]} 
+								/>
+								<Field 
+									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[0].sets[" + i + "].reps" }
+									component={this.renderInput} 
+									validate={[required]} 
+								/>
+							</View>
+			// <View key = {i}><Text>loop</Text></View>
+			);
 		}
 		return vLoopSets;
 		
 	}
     
 	render() {
-		// const { navigation, exercises, entities } = this.props;
+		const { handleSubmit } = this.props;
 		// const ex = navigation.getParam('exercises', []); 
 		console.log('this.state.countSets',this.state.countSets);
 		
@@ -109,21 +142,17 @@ class SetsContainer extends React.Component<Props, State> {
 							>
 								<Text>Add</Text>
 							</Button>
-							<Field 
-								name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[0].sets[0].set" }
-								component={this.renderInput} 
-								validate={[required]} 
-							/>
-							<Field 
-								name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[0].sets[0].weight" }
-								component={this.renderInput} 
-								validate={[required]} 
-							/>
-							<Field 
-								name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[0].sets[0].reps" }
-								component={this.renderInput} 
-								validate={[required]} 
-							/>
+							
+						</View>
+						<View padder>
+							<Button 
+								onPress={()=>{
+									handleSubmit(this.newWorkout);
+									// this.props.navigation.navigate("NewWorkout", {})
+								}}
+							>
+								<Text>Save</Text>
+							</Button>
 						</View>
                     </Form>
 
@@ -141,4 +170,4 @@ const CategoriesForm = reduxForm({
 
 
 
-export default connect(null, null)(CategoriesForm);
+export default connect(null, {saveWorkouts})(CategoriesForm);
