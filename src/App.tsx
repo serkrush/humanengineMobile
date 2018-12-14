@@ -14,6 +14,7 @@ import Home from "./container/HomeContainer";
 import Workout from "./container/WorkoutContainer";
 import WorkoutStart from "./container/WorkoutStartContainer";
 import NewWorkout from "./container/NewWorkoutContainer";
+import Test from "./container/Test";
 import Categories from "./container/CategoriesContainer";
 import Exercises from "./container/ExercisesContainer";
 import ExerciseDescription from "./container/ExerciseDescriptionContainer";
@@ -60,6 +61,7 @@ const AppUser = StackNavigator(
 		Exercises: { screen: Exercises },
 		ExerciseDescription: { screen: ExerciseDescription },
 		Sets: { screen: Sets },
+		Test: { screen: Test },
 	},
 	{
 		initialRouteName: "Drawer",

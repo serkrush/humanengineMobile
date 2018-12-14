@@ -145,12 +145,7 @@ class SetsContainer extends React.Component<Props, State> {
 							
 						</View>
 						<View padder>
-							<Button 
-								onPress={()=>{
-									handleSubmit(this.newWorkout);
-									// this.props.navigation.navigate("NewWorkout", {})
-								}}
-							>
+							<Button block onPress={handleSubmit(this.newWorkout)}>
 								<Text>Save</Text>
 							</Button>
 						</View>
