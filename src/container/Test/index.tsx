@@ -1,26 +1,14 @@
-import * as React from "react";
+import React from 'react'
 import { connect } from "react-redux";
-
-import {
-	Container,
-	Header,
-	Title,
-	Content,
-	Text,
-	Button,
-	Icon,
-	Left,
-	Body,
-	Right,
-	Form,
-	View,
-	Item, Input, Tab, Tabs, ScrollableTab, Fab, Textarea
-} from "native-base";
-// import { AppRegistry, FlatList, StyleSheet, View } from 'react-native';
-import { Field, FieldArray, reduxForm } from "redux-form";
 import { saveWorkouts } from "../../models/workouts";
-
-import styles from '../../stories/screens/Home/styles';//"../stories/screens/styles";
+import { Field, reduxForm } from 'redux-form'
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native'
 
 export interface Props {
 	navigation: any;
@@ -30,90 +18,57 @@ export interface Props {
 export interface State {
 	userId: string;
 }
-class TestContainer extends React.Component<Props, State> {
-	textInput: any;
-	constructor(props) {
-        super(props);
-        
 
-		this.testWorkout = this.testWorkout.bind(this);
-    }
-    
-    testWorkout(data) {
-		console.log("data", data);
 
-		const { saveWorkouts } = this.props;
-		saveWorkouts(data);
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: 'blue',
+    color: 'white',
+    height: 30,
+    lineHeight: 30,
+    marginTop: 10,
+    textAlign: 'center',
+    width: 250
+  },
+  container: {
 
-		// if (valid) {
-		// 	//this.props.navigation.navigate("Drawer");
-		// } else {
-		// 	Toast.show({
-		// 		text: "Enter Valid Username & password!",
-		// 		duration: 2000,
-		// 		position: "top",
-		// 		textStyle: { textAlign: "center" },
-		// 	});
-		// }
+  },
+  input: {
+    borderColor: 'black',
+    borderWidth: 1,
+    height: 37,
+    width: 250
+  }
+})
+
+
+
+
+  const renderInput = ({ input: { onChange, ...restInput }}) => {
+	return <TextInput style={styles.input} onChangeText={onChange} {...restInput} />
+  }
+  
+  
+  const Form = props => {
+	const submit = values => {
+		console.log('submitting form', values);
+		const { saveWorkouts } = props;
+		saveWorkouts(values);
 	}
-
-	renderInput({ input, meta: { touched, error } }) {
-		return (
-			<Item error={error && touched}>
-				<Input
-					ref={c => (this.textInput = c)}
-					placeholder="WorkoutName"
-					secureTextEntry={false}
-					{...input}
-				/>
-			</Item>
-		);
-	}
-
-	public render() {
-        const { handleSubmit } = this.props;
-
-		return (
-            <Container style={styles.container}>
-                <Header>
-                    <Left>
-                        <Button transparent>
-                        <Icon
-                            active
-                            name="menu"
-                            onPress={() => this.props.navigation.navigate("DrawerOpen")}
-                        />
-                        </Button>
-                    </Left>
-                    <Body>
-                        <Title>Test</Title>
-                    </Body>
-                    <Right />
-                </Header>
-                <Content style={styles.contentPadding}>
-                    <Form>
-                        <View style={styles.contentPadding}>
-                            <Field 
-                                name="workoutName" 
-                                component={this.renderInput} 
-                                />
-                        </View>
-                        <View padder>
-							<Button block onPress={handleSubmit(this.testWorkout)}>
-								<Text>Save</Text>
-							</Button>
-						</View>
-                    </Form>
-                </Content>
-            </Container>
-        )
-	}
-}
+	const { handleSubmit } = props
+  
+	return (
+	  <View style={styles.container}>
+		<Text>Email:</Text>
+		<Field name="workoutName" component={renderInput} />
+		<TouchableOpacity onPress={handleSubmit(submit)}>
+		  <Text style={styles.button}>Submit</Text>
+		</TouchableOpacity>
+	  </View>
+	)
+  }
 
 
-const TestWorkout = reduxForm({
-    form: "testWorkout",
-    enableReinitialize: true
-})(TestContainer);
-
-export default connect(null, {saveWorkouts})(TestWorkout);
+export default connect(null, {saveWorkouts})(reduxForm({
+	form: 'test'
+  })(Form));
