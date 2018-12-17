@@ -1,5 +1,5 @@
 import Model, { CRUD }  from "./model";
-import { action, pageFetching } from "../redux/actions";
+import { action, pageFetching, clearRequestResult } from "../redux/actions";
 import { call, select, put, take, fork } from "redux-saga/effects";
 import { schema } from 'normalizr';
 
@@ -10,6 +10,8 @@ const FIND_BY_ID = "FIND_BY_ID";
 // const CHANGE_WORKOUTS = "CHANGE_WORKOUTS";
 const WORKOUT_EXERCISES = "WORKOUT_EXERCISES";
 const SAVE_WORKOUTS = 'SAVE_WORKOUTS';
+const LOAD_WORKOUT           = 'LOAD_WORKOUT';
+const LOAD_WORKOUTS = 'LOAD_WORKOUTS';
 
 export const ITEMS_PER_PAGE = 25;
 
@@ -19,6 +21,8 @@ export const fetchWorkouts = ( params ) => action(FETCH_WORKOUTS, params );
 export const findById = ( id )  => action(FIND_BY_ID, { id });
 // export const changeWorkout = ( data )  => action(CHANGE_WORKOUTS, data);
 export const saveWorkouts = ( data )  => action(SAVE_WORKOUTS, data);
+export const loadWorkoutPage = (id) => action(LOAD_WORKOUT, { id });
+export const loadWorkouts = () => action(LOAD_WORKOUTS,  {} );
 
 //newWorkout
 
@@ -45,18 +49,18 @@ class Workout extends Model {
             this.findById.bind(this),
             // this.watchChangeWorkout.bind(this),
             this.watchSaveWorkouts.bind(this),
+            this.watchLoadWorkout.bind(this),
+            this.watchLoad.bind(this),
         );
     }
 
 
     public * watchSaveWorkouts() {
-        console.log('start watchSaveWorkouts');
         const func = this.request('/workout', {method: 'PUT', crud:CRUD.UPDATE}).bind(this);
         while(true) {
             const data = yield take(SAVE_WORKOUTS);
-            console.log('after suga SAVE_WORKOUTS');
-            
             yield fork(func, data);
+            
         }
     }
 
@@ -143,6 +147,21 @@ class Workout extends Model {
     //     });
     //     return workoutSelect;
     // }
+    public * watchLoadWorkout() {
+        while(true) {
+            const { id } = yield take(LOAD_WORKOUT);
+            yield put(clearRequestResult('workouts'));
+            yield put(loadWorkouts());
+        }
+    }
+    public * watchLoad() {
+        const func = this.request('/workout', {method: 'GET', crud: CRUD.READ}).bind(this);
+        while (true) {
+            yield take(LOAD_WORKOUTS);
+            // yield put(loadCategories());
+            yield fork(func);
+        }
+    }
 
 }
 

@@ -59,6 +59,8 @@ class SetsContainer extends React.Component<Props, State> {
 
 		const { saveWorkouts } = this.props;
 		saveWorkouts(data);
+		this.props.navigation.navigate("NewWorkout", {});
+
 
 		// if (valid) {
 		// 	//this.props.navigation.navigate("Drawer");
@@ -142,7 +144,6 @@ class SetsContainer extends React.Component<Props, State> {
 							>
 								<Text>Add</Text>
 							</Button>
-							
 						</View>
 						<View padder>
 							<Button block onPress={handleSubmit(this.newWorkout)}>

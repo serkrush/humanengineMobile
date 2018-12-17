@@ -7,6 +7,8 @@ export const CLEAR_CACHE        = "CLEAR_CACHE";
 export const PAGE_FETCHING      = "PAGE_FETCHING";
 export const SET_FLAGGER        = "SET_FLAGGER";
 
+export const CLEAR_REQUEST_RESULT = 'CLEAR_REQUEST_RESULT';
+
 export const CREATE             = "CREATE";
 export const READ               = "READ";
 export const UPDATE             = "UPDATE";
@@ -51,3 +53,5 @@ export const pageFetching = (entity, page, done, force = false) => action(PAGE_F
 export const clearCache = (entity) => action(CLEAR_CACHE, { entity });
 
 export const setFlagger = (key, value) => action(SET_FLAGGER, {key, value} );
+
+export const clearRequestResult = (entity) => action(CLEAR_REQUEST_RESULT, { entity } );

@@ -47,7 +47,6 @@ class ExerciseDescriptionContainer extends React.Component<Props, State> {
 	render() {
 		const { navigation, exercises, entities } = this.props;
         const ex = navigation.getParam('exercise', []);
-        console.log('ex', ex);
         
 		return (
 			<Container style={styles.container}>

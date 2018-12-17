@@ -1,6 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { Action } from "redux";
+import { UPDATE } from "../../redux/actions";
 
 import {
 	Container,
@@ -27,6 +28,7 @@ const required = value => (value ? undefined : "Required");
 
 export interface Props {
 	navigation: any;
+	workout: Map<string, any>;
 	// saveWorkouts: (data) => Action;
 }
 
@@ -73,6 +75,7 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 	}
 
 	render() {
+		const { workout } = this.props;
 		
 		return (
 			<Container style={styles.container}>
@@ -101,7 +104,7 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 								component={this.renderTextarea} 
 								validate={[required]} />
 						</View>
-						<FieldArray name="days" component={renderDays} _this={this} />
+						<FieldArray name="days" component={renderDays} _this={this} _workout={workout} />
 					</Form>
 
 				</Content>
@@ -140,8 +143,11 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 }
 
 
-const renderDays = ({ fields, _this, meta: { error, submitFailed } }) => {
+const renderDays = ({ fields, _this, _workout, meta: { error, submitFailed } }) => {
 	_this.setState({_fields: fields});
+
+	console.log('_workout', _workout);
+	
 
 	if (fields.length==0){fields.push({})};
 	return	<View>
@@ -152,7 +158,12 @@ const renderDays = ({ fields, _this, meta: { error, submitFailed } }) => {
 								key={"day_"+index}
 								heading={"Day"+(index*1+1*1)}
 							>
-								<Text>Workout content</Text>
+								{
+									_workout && _workout.size > 0 && _workout.valueSeq().map((w,i)=>{
+										console.log('w',w.days);
+										return <Text>111</Text>
+									})
+								}
 							</Tab>
 						))
 					}
@@ -164,6 +175,24 @@ const NewWorkout = reduxForm({
 	form: "newWorkout",
 	destroyOnUnmount: false, // <------ preserve form data
 	forceUnregisterOnUnmount: true, // <------ unregister fields on unmount
+	enableReinitialize: true,
 })(NewWorkoutContainer);
 
-export default connect(null, null)(NewWorkout);
+const mapStateToProps = (state, props) => {
+	const { entities, requestResult } = state;
+
+	let workoutId = props.workoutId;
+	if (requestResult && requestResult.has('workouts') && requestResult.get('workouts').has(UPDATE)) {
+		workoutId = requestResult.getIn(['workouts', UPDATE]).first();
+	}
+	
+	const workout = (workoutId && entities.get('workouts'))?entities.get('workouts').get(workoutId):null;
+	
+	console.log('workoutId', workoutId, workout);
+	return{
+		workout,
+		initialValues : workout ? workout.toJS() : {},
+	}
+}
+
+export default connect(mapStateToProps, null)(NewWorkout);

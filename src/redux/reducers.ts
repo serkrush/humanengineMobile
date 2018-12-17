@@ -95,30 +95,62 @@ const initialPagerState = fromJS({
     },
 });
 
+
 function pagination(state = initialPagerState, action) {
     // get result for the paginator, disable fetching
     if (action.response && action.response.pager) {
         const { response: { pager } } = action;
-        if (action.hasOwnProperty("glob") && state.has(action.glob.entity.entityName)) {
-            let pagination = state.get(action.glob.entity.entityName);
-            pagination = pagination.set("currentPage", pager.page).set("count", pager.count);
-            let pages = pagination.get("pages");
+        if (action.hasOwnProperty('glob') && state.has(action.glob.entity.entityName)) {
+            const pageName  = 'pageName' in action.data?action.data.pageName:action.glob.entity.entityName;
+            let pagination = state.get(pageName);
+            pagination = pagination.set('currentPage', pager.page).set('count', pager.count);
+            let pages = pagination.get('pages');
             let item = fromJS({
                 ids: action.response.result,
             });
-            pagination = pagination.set("pages", pages.set(pager.page, item));
-            state = state.set(action.glob.entity.entityName, pagination);
+            pagination = pagination.set('pages', pages.set(pager.page, item));
+            state = state.set(pageName, pagination); 
         }
     }
     // prepare item for the paginator, enable fetching
     const { type } = action;
     if (type === ActionTypes.PAGE_FETCHING) {
-        const { entity, page, done, force } = action;
-        let pagination = state.get(entity).set("currentPage", page).set("fetching", done);
+        const { pageName, page, done, force, entity } = action;
+        let pagination = state.get(pageName).set('currentPage', page).set('fetching', done).set('entity', entity);
         if (force) {
-            pagination = pagination.set("pages", fromJS({}));
+            pagination = pagination.set('pages', fromJS({}));
         }
-        state = state.set(entity, pagination);
+        state = state.set(pageName, pagination); 
+    }
+
+
+    if (action.hasOwnProperty('glob') && state.has(action.glob.entity.entityName)) {
+        const { glob : { method } } = action;
+        if (method == ActionTypes.DELETE) {
+            state = state.map(pager => pager.set('pages', fromJS({})));
+            console.log('after del', state);
+        }
+    }
+
+    return state;
+} 
+
+const initialRequestResult = fromJS({
+});
+
+function requestResult(state = initialRequestResult, action) {
+    if (action.hasOwnProperty('glob')) {
+        const { glob : { method, entity } } = action;
+        if (action.response && action.response.result) {
+            const { response: { result } } = action;
+            state = state.setIn([entity.entityName, method], fromJS(result));
+        }
+    }
+    const { type, entity } = action;
+    if (type === ActionTypes.CLEAR_REQUEST_RESULT) {
+        if (state.has(entity)) {
+            state = state.set(entity, fromJS({}));
+        }
     }
     return state;
 }
@@ -138,6 +170,7 @@ function flagger(state = initialFlagger, action) {
 
 const rootReducer = combineReducers({
     entities,
+    requestResult,
     form,
     cached,
     message,
