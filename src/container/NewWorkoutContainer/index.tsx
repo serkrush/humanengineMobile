@@ -146,9 +146,16 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 const renderDays = ({ fields, _this, _workout, meta: { error, submitFailed } }) => {
 	_this.setState({_fields: fields});
 
-	console.log('_workout', _workout);
-	
+	const days = _workout.get('days');
+	console.log('ddddddddddddddaysssssssssss',days);
 
+
+	
+	
+	
+	
+	
+	
 	if (fields.length==0){fields.push({})};
 	return	<View>
 				<Tabs renderTabBar={()=> <ScrollableTab />} onChangeTab={({ i, ref }) => _this.setState({indexDay: i})}>
@@ -159,11 +166,37 @@ const renderDays = ({ fields, _this, _workout, meta: { error, submitFailed } }) 
 								heading={"Day"+(index*1+1*1)}
 							>
 								{
-									_workout && _workout.size > 0 && _workout.valueSeq().map((w,i)=>{
-										console.log('w',w.days);
-										return <Text>111</Text>
+									days && days.size > 0 && days.map((d,d_i)=>{
+										if (d_i==index){
+											{
+												let _exercises = d.get('exercises');
+												console.log('_exercises',_exercises);
+												
+												_exercises.map((_e, e_i)=>{
+													return <Text>1111</Text>
+												})
+											}
+											
+										}
 									})
 								}
+								{/* {
+									days && days.size > 0 && days.valueSeq().map((d,i)=>{
+										console.log('d',d);
+										d && d.size > 0 && d.map((_d,_i)=>{
+
+											_d && _d.size > 0 && _d.map((__d,__i)=>{
+												console.log('__d',__d,__d.get('sets'));
+												
+												return <Text key={"day_"+__i+"_"+Math.random()} >111</Text>
+											})
+
+
+
+										})
+										
+									})
+								} */}
 							</Tab>
 						))
 					}
@@ -181,14 +214,14 @@ const NewWorkout = reduxForm({
 const mapStateToProps = (state, props) => {
 	const { entities, requestResult } = state;
 
-	let workoutId = props.workoutId;
-	if (requestResult && requestResult.has('workouts') && requestResult.get('workouts').has(UPDATE)) {
-		workoutId = requestResult.getIn(['workouts', UPDATE]).first();
-	}
+	let workoutId = '5c18bb09831ccc36bd058fc5';//props.workoutId;
+	// if (requestResult && requestResult.has('workouts') && requestResult.get('workouts').has(UPDATE)) {
+	// 	workoutId = requestResult.getIn(['workouts', UPDATE]).first();
+	// }
 	
 	const workout = (workoutId && entities.get('workouts'))?entities.get('workouts').get(workoutId):null;
 	
-	console.log('workoutId', workoutId, workout);
+	
 	return{
 		workout,
 		initialValues : workout ? workout.toJS() : {},

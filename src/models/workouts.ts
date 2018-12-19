@@ -77,9 +77,7 @@ class Workout extends Model {
         const func = this.request("/workout/user", {method: "POST", crud: CRUD.READ}).bind(this);
 
         while (true) {
-            yield take(LOAD_WORKOUTS_USER);
-            console.log('after suga LOAD_WORKOUTS_USER');
-            
+            yield take(LOAD_WORKOUTS_USER);            
             yield call(this.request("/workout/public", {method: "POST", crud: CRUD.READ}).bind(this));
             yield call(func);
         }

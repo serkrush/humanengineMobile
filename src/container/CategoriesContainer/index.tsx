@@ -95,7 +95,8 @@ class CategoriesContainer extends React.Component<Props, State> {
 						<View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
 						{
 							categories && categories.valueSeq().map((c,i)=>{
-
+								console.log('c',c);
+								
 
 								return  <TouchableOpacity 
 											key={"category_"+i+"_"+Math.random()} 

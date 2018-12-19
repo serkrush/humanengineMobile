@@ -20,7 +20,6 @@ class ViewWorkout extends React.Component<Props, State> {
             <View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
                 {
                     workouts && workouts.map((t, i) => {
-                        console.log('t',t);
                         return<TouchableOpacity key={"workout_"+i+"_"+Math.random()} style={{width:"50%"}} onPress={() => this.props.navigation.navigate("Workout", {workout: t})}><View>
                                 <Card>
                                     <CardItem cardBody>
