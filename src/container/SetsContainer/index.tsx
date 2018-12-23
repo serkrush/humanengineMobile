@@ -94,17 +94,17 @@ class SetsContainer extends React.Component<Props, State> {
 		for (i=0;i<=countSets;i++){
 			vLoopSets.push(<View key = {i}>
 								<Field 
-									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[0].sets[" + i + "].set" }
+									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[" + this.props.navigation.getParam('indexExercise', 0) + "].sets[" + i + "].set" }
 									component={this.renderInput} 
 									validate={[required]} 
 								/>
 								<Field 
-									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[0].sets[" + i + "].weight" }
+									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[" + this.props.navigation.getParam('indexExercise', 0) + "].sets[" + i + "].weight" }
 									component={this.renderInput} 
 									validate={[required]} 
 								/>
 								<Field 
-									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[0].sets[" + i + "].reps" }
+									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[" + this.props.navigation.getParam('indexExercise', 0) + "].sets[" + i + "].reps" }
 									component={this.renderInput} 
 									validate={[required]} 
 								/>

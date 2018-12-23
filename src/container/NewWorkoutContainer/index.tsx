@@ -16,12 +16,14 @@ import {
 	Right,
 	Form,
 	View,
-	Item, Input, Tab, Tabs, ScrollableTab, Fab, Textarea
+	Item, Input, Tab, Tabs, ScrollableTab, Fab, Textarea,Card,CardItem
 } from "native-base";
+import { FlatList, Image } from 'react-native';
 
 import styles from '../../stories/screens/Home/styles';
 // import { saveWorkouts } from '../../models/workouts';
 import { Field, FieldArray, reduxForm } from "redux-form";
+import Workout from "../../models/workouts";
 
 
 const required = value => (value ? undefined : "Required");
@@ -29,21 +31,27 @@ const required = value => (value ? undefined : "Required");
 export interface Props {
 	navigation: any;
 	workout: Map<string, any>;
+    exercises: Map<string, any>;
 	// saveWorkouts: (data) => Action;
 }
 
 export interface State {
 	_fields: any,
-	indexDay: number
+	indexDay: number,
+	indexExercise: number
 }
 class NewWorkoutContainer extends React.Component<Props, State> {
 	textInput: any;
 	constructor(props: Props) {
 		
 		super(props);
+		// .days[0].exercises.length
+		const workoutDays = this.props.workout.get('days').toJS();
+		
 		this.state = {
 			active: 'true',
-			indexDay: 0
+			indexDay: 0,
+			indexExercise: workoutDays?workoutDays[0].exercises.length:0
 		};
 		// this.addWorkout = this.addWorkout.bind(this);
 	}
@@ -129,6 +137,7 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 							style={{ backgroundColor: '#ff9052' }} 
 							onPress={() => this.props.navigation.navigate("Categories", {
 																							indexDay: this.state.indexDay,
+																							indexExercise: this.state.indexExercise,
 																							countDay: (this.state._fields)?this.state._fields.length:0
 																						})} 
 						>
@@ -146,62 +155,82 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 const renderDays = ({ fields, _this, _workout, meta: { error, submitFailed } }) => {
 	_this.setState({_fields: fields});
 
-	const days = _workout.get('days');
-	console.log('ddddddddddddddaysssssssssss',days);
+	// console.log('exercises', _this.props.exercises.getIn([exercise]));
+	
 
+	const days = _workout.get('days').toJS();
 
+	console.log('days', days[1].exercises.length);
 	
-	
-	
-	
-	
-	
+
 	if (fields.length==0){fields.push({})};
-	return	<View>
-				<Tabs renderTabBar={()=> <ScrollableTab />} onChangeTab={({ i, ref }) => _this.setState({indexDay: i})}>
+	return <View>
+		<Tabs renderTabBar={()=> <ScrollableTab />} onChangeTab={({ i, ref }) => {_this.setState({indexDay: i});_this.setState({indexExercise: days[i].exercises.length});}}>
 					{
 						fields.map((day, index) => (
 							<Tab 
 								key={"day_"+index}
 								heading={"Day"+(index*1+1*1)}
 							>
-								{
-									days && days.size > 0 && days.map((d,d_i)=>{
-										if (d_i==index){
-											{
-												let _exercises = d.get('exercises');
-												console.log('_exercises',_exercises);
-												
-												_exercises.map((_e, e_i)=>{
-													return <Text>1111</Text>
-												})
-											}
-											
-										}
-									})
-								}
-								{/* {
-									days && days.size > 0 && days.valueSeq().map((d,i)=>{
-										console.log('d',d);
-										d && d.size > 0 && d.map((_d,_i)=>{
+		<View>
+			{days && days.map((d,i)=>{
+				if (index==i){
+					return <View key={"day_"+i+Math.random()}>
+						{d.exercises.map((_d,_i)=>{
+							let exerciseInfo =  _this.props.exercises.getIn([_d.exercise]);
+							let vSets = 0;
+							let vReps = 0;
+							let vRm = 0;
+							let vRest = 0;
+							_d.sets.map((s,is)=>{
+								vSets+=s.set;
+								vReps+=s.rep;
+								vRm+=s.rm;
+								vRest+=s.rest;
+							})
+							
+							
+							return <Card key={"exercise_"+_i+Math.random()}>
+										<CardItem>
+											<Body style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
+												<View style={{width:"30%"}}>
+													<Image source={{uri: Workout['mIP'] + '/upload/file?s=exercises&f=' + exerciseInfo.get('exerciseImg') +'&d=muscle.png'}} style={{ height: 75, width: 90, flex: 1}}/>
+												</View>
+												<View style={{width:"70%", paddingLeft: 5}}>
+													<Text>{exerciseInfo.get('exerciseName')}</Text>
+													<View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
+														<View style={{width:'50%'}}>
+															<Text>Sets: {vSets}</Text>
+														</View>
+														<View style={{width:'50%'}}>
+															<Text>Reps: {vReps}</Text>
+														</View>
+														<View style={{width:'50%'}}>
+															<Text>1RM: {vRm}</Text>
+														</View>
+														<View style={{width:'50%'}}>
+															<Text>Rest: {vRest}</Text>
+														</View>
+													</View>
+												</View>
+											</Body>
+										</CardItem>
+									</Card>
+						})}
+					</View>
+				}
+			})}
+		</View>
+		</Tab>
+	))
+}
+</Tabs>
+	</View>
+	
 
-											_d && _d.size > 0 && _d.map((__d,__i)=>{
-												console.log('__d',__d,__d.get('sets'));
-												
-												return <Text key={"day_"+__i+"_"+Math.random()} >111</Text>
-											})
-
-
-
-										})
-										
-									})
-								} */}
-							</Tab>
-						))
-					}
-				</Tabs>
-			</View>;
+	
+	
+	
 }
 
 const NewWorkout = reduxForm({
@@ -225,6 +254,7 @@ const mapStateToProps = (state, props) => {
 	return{
 		workout,
 		initialValues : workout ? workout.toJS() : {},
+		exercises: entities.get('exercises'),
 	}
 }
 

@@ -49,11 +49,11 @@ class CategoriesContainer extends React.Component<Props, State> {
 		this.RadioButton = this.RadioButton.bind(this);
 	}
 
-	RadioButton({ selected, val, input, changeState, indexDay, exercises }) {
+	RadioButton({ selected, val, input, changeState, indexDay, exercises, indexExercise }) {
 		return (
 			<Radio
 				{...input}
-				onPress={() => {input.onChange(val); changeState(); this.props.navigation.navigate("Exercises", {exercises: exercises, indexDay:indexDay})  }}
+				onPress={() => {input.onChange(val); changeState(); this.props.navigation.navigate("Exercises", {exercises: exercises, indexDay:indexDay, indexExercise:indexExercise})  }}
 				selected={selected === val}
 				style={{position:"absolute",height:'100%',width:'100%',opacity:0}}
 				// color="transparent"
@@ -95,22 +95,11 @@ class CategoriesContainer extends React.Component<Props, State> {
 						<View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
 						{
 							categories && categories.valueSeq().map((c,i)=>{
-								console.log('c',c);
-								
+								const inExercise = this.props.navigation.getParam('indexExercise', 0);
 
 								return  <TouchableOpacity 
 											key={"category_"+i+"_"+Math.random()} 
 											style={{width:"50%",position:"relative"}} 
-											// onPress={() => {
-											// 				this.props.navigation.navigate("Exercises", {
-											// 																exercises: c.get('exercises'), 
-											
-											// 																indexDay: this.props.navigation.getParam('indexDay', 0),
-											// 																countDay: this.props.navigation.getParam('countDay', 0)
-											// 															}
-											// 												)
-											// 				}
-											// 		}
 										><View>
 											<Card>
 													<CardItem cardBody>
@@ -122,40 +111,16 @@ class CategoriesContainer extends React.Component<Props, State> {
 												</Card>
 									<Field
 										
-										name={'days[' + this.props.navigation.getParam('indexDay', 0) + '].exercises[0].category'}
+										name={'days[' + this.props.navigation.getParam('indexDay', 0) + '].exercises[' + inExercise + '].category'}
 										component={this.RadioButton}
 										label={c.get('categoryName')}
 										val={c.get('id')}
 										selected={this.state.selected}
-										indexDay = { this.props.navigation.getParam('indexDay', 0) }
 										exercises = { c.get('exercises') }
+										indexExercise = {inExercise}
 										changeState={() => this.onPress(c.get('id'))}
 									/>
 								</View></TouchableOpacity>;
-								// return <TouchableOpacity 
-								// 			key={"category_"+i+"_"+Math.random()} 
-								// 			style={{width:"50%"}} 
-								// 			onPress={() => {
-								// 							this.props.navigation.navigate("Exercises", {
-								// 																			exercises: c.get('exercises'), 
-								// 																			categoryId: c.get('id'),
-								// 																			indexDay: this.props.navigation.getParam('indexDay', 0),
-								// 																			countDay: this.props.navigation.getParam('countDay', 0)
-								// 																		}
-								// 															)
-								// 							}
-								// 					}>
-								// 			<View>
-								// 				<Card>
-								// 					<CardItem cardBody>
-								// 						<Image source={{uri: Workout['mIP'] + '/upload/file?s=categories&f=' + c.get('categoryImg') +'&d=muscle.png'}} style={{height: 125, width: null, flex: 1}}/>
-								// 					</CardItem>
-								// 					<CardItem cardBody>
-								// 						<Text>{c.get('categoryName')}</Text>
-								// 					</CardItem>
-								// 				</Card>
-								// 			</View>
-								// 		</TouchableOpacity>;
 							})
 						}
 						

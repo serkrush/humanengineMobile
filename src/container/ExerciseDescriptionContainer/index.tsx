@@ -70,6 +70,7 @@ class ExerciseDescriptionContainer extends React.Component<Props, State> {
 							style={{marginLeft:"auto",marginRight:"auto"}} 
 							onPress={() => this.props.navigation.navigate("Sets",{
 								indexDay: this.props.navigation.getParam('indexDay', 0),
+								indexExercise: this.props.navigation.getParam('indexExercise', 0),
 								countDay: this.props.navigation.getParam('countDay', 0),
 								categoryId: this.props.navigation.getParam('categoryId', null),
 								exerciseId: ex.get('id'),

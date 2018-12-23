@@ -49,11 +49,11 @@ class ExercisesContainer extends React.Component<Props, State> {
 		this.RadioButton = this.RadioButton.bind(this);
 	}
 
-	RadioButton({ selected, val, input, changeState, indexDay, exercise }) {
+	RadioButton({ selected, val, input, changeState, indexDay, exercise, indexExercise }) {
 		return (
 			<Radio
 				{...input}
-				onPress={() => {input.onChange(val); changeState(); this.props.navigation.navigate("ExerciseDescription", {exercise: exercise, indexDay:indexDay})  }}
+				onPress={() => {input.onChange(val); changeState(); this.props.navigation.navigate("ExerciseDescription", {exercise: exercise, indexDay:indexDay, indexExercise:indexExercise})  }}
 				selected={selected === val}
 				style={{position:"absolute",height:'100%',width:'100%',opacity:0}}
 				// color="transparent"
@@ -70,7 +70,8 @@ class ExercisesContainer extends React.Component<Props, State> {
 	render() {
 		const { entities } = this.props;
 		const ex = this.props.navigation.getParam('exercises', []);
-        
+		console.log('this.props.navigation.',this.props.navigation.getParam('indexExercise', 0) );
+		
 		return (
 			<Container style={styles.container}>
 				<Header>
@@ -89,22 +90,14 @@ class ExercisesContainer extends React.Component<Props, State> {
                         <View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
                             {
                                 ex && ex.map((e,i)=>{
-                                    let _exercise = entities.getIn(['exercises', e]);
-                                    console.log('_exercise',_exercise, _exercise.get('exerciseName'));
+									let _exercise = entities.getIn(['exercises', e]);
+									const inExercise = this.props.navigation.getParam('indexExercise', 0);
+                                    console.log('_exercise',inExercise);
                                     
                                         
 										return <TouchableOpacity 
 													key={"exercise_"+i+"_"+Math.random()} 
 													style={{width:"50%"}} 
-												// 	onPress={() => {this.props.navigation.navigate("ExerciseDescription", {
-												// 																			exercise: _exercise,
-												// 																			indexDay: this.props.navigation.getParam('indexDay', 0),
-												// 																			countDay: this.props.navigation.getParam('countDay', 0),
-												// 																			categoryId: this.props.navigation.getParam('categoryId', null),
-												// 																			// selectExercise: _exercise.get('id'),
-												// 																			// jsonDays: jsonDays
-																														
-												// })}}
 												>
 													<View>
 														<Card>
@@ -116,12 +109,13 @@ class ExercisesContainer extends React.Component<Props, State> {
 															</CardItem>
 														</Card>
 														<Field
-															name={'days[' + this.props.navigation.getParam('indexDay', 0) + '].exercises[0].exercise'}
+															name={'days[' + this.props.navigation.getParam('indexDay', 0) + '].exercises[' + inExercise + '].exercise'}
 															component={this.RadioButton}
 															label={_exercise.get('exerciseName')}
 															val={_exercise.get('id')}
 															selected={this.state.selected}
 															indexDay = { this.props.navigation.getParam('indexDay', 0) }
+															indexExercise = { this.props.navigation.getParam('indexExercise', 0) }
 															exercise = { _exercise }
 															changeState={() => this.onPress(_exercise.get('id'))}
 														/>
