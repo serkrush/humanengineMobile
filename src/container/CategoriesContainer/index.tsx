@@ -117,6 +117,7 @@ class CategoriesContainer extends React.Component<Props, State> {
 										val={c.get('id')}
 										selected={this.state.selected}
 										exercises = { c.get('exercises') }
+										indexDay = { this.props.navigation.getParam('indexDay', 0) }
 										indexExercise = {inExercise}
 										changeState={() => this.onPress(c.get('id'))}
 									/>

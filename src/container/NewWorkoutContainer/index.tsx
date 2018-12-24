@@ -16,13 +16,13 @@ import {
 	Right,
 	Form,
 	View,
-	Item, Input, Tab, Tabs, ScrollableTab, Fab, Textarea,Card,CardItem
+	Item, Input, Tab, Tabs, ScrollableTab, Fab, Card, CardItem, ActionSheet, Root
 } from "native-base";
-import { FlatList, Image } from 'react-native';
+import { Image, TextInput, TouchableOpacity, Alert } from 'react-native';
 
 import styles from '../../stories/screens/Home/styles';
 // import { saveWorkouts } from '../../models/workouts';
-import { Field, FieldArray, reduxForm } from "redux-form";
+import { Field, FieldArray, reduxForm, change, arrayRemoveAll } from "redux-form";
 import Workout from "../../models/workouts";
 
 
@@ -69,14 +69,16 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 		);
 	}
 
-	renderTextarea({ textarea, meta: { touched, error } }){
+	renderTextarea({ input, meta: { touched, error } }){
 		return (
 			<Item error={error && touched}>
-				<Textarea
+				<TextInput
 					ref={c => (this.textInput = c)}
-					placeholder="Description"
+					placeholder="Description1"
 					secureTextEntry={false}
-					{...textarea}
+					multiline={true}
+					numberOfLines={1}
+					{...input}
 				/>
 			</Item>
 		);
@@ -155,6 +157,7 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 const renderDays = ({ fields, _this, _workout, meta: { error, submitFailed } }) => {
 	_this.setState({_fields: fields});
 
+	console.log('fields',fields);
 	// console.log('exercises', _this.props.exercises.getIn([exercise]));
 	
 
@@ -175,7 +178,7 @@ const renderDays = ({ fields, _this, _workout, meta: { error, submitFailed } }) 
 		<View>
 			{days && days.map((d,i)=>{
 				if (index==i){
-					return <View key={"day_"+i+Math.random()}>
+					return <Root key={"day_"+i+Math.random()}>
 						{d.exercises.map((_d,_i)=>{
 							let exerciseInfo =  _this.props.exercises.getIn([_d.exercise]);
 							let vSets = 0;
@@ -188,36 +191,73 @@ const renderDays = ({ fields, _this, _workout, meta: { error, submitFailed } }) 
 								vRm+=s.rm;
 								vRest+=s.rest;
 							})
+
+
+							var BUTTONS = [ "Change", "Delete", "Cancel" ];
+							var DESTRUCTIVE_INDEX = 3;
+							var CANCEL_INDEX = 4;
 							
 							
-							return <Card key={"exercise_"+_i+Math.random()}>
-										<CardItem>
-											<Body style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
-												<View style={{width:"30%"}}>
-													<Image source={{uri: Workout['mIP'] + '/upload/file?s=exercises&f=' + exerciseInfo.get('exerciseImg') +'&d=muscle.png'}} style={{ height: 75, width: 90, flex: 1}}/>
-												</View>
-												<View style={{width:"70%", paddingLeft: 5}}>
-													<Text>{exerciseInfo.get('exerciseName')}</Text>
-													<View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
-														<View style={{width:'50%'}}>
-															<Text>Sets: {vSets}</Text>
-														</View>
-														<View style={{width:'50%'}}>
-															<Text>Reps: {vReps}</Text>
-														</View>
-														<View style={{width:'50%'}}>
-															<Text>1RM: {vRm}</Text>
-														</View>
-														<View style={{width:'50%'}}>
-															<Text>Rest: {vRest}</Text>
+							return 	<TouchableOpacity 
+										key={"exercise_"+_i+Math.random()}
+										onPress={() =>{
+											ActionSheet.show(
+												{
+													options: BUTTONS,
+													cancelButtonIndex: CANCEL_INDEX,
+													destructiveButtonIndex: DESTRUCTIVE_INDEX,
+												},
+												buttonIndex => {
+													if (buttonIndex==1){
+														Alert.alert(
+															'Delete',
+															'Delete exercise?',
+															[
+																{text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+																{text: 'OK', onPress: () => {console.log('fields3',_this.props.newWorkout);
+																arrayRemoveAll('newWorkout', 'days')/*fields.remove(0)*/
+																// change('newWorkout','values.days', undefined)
+																
+																}},
+															],
+															{ cancelable: false }
+														);
+													}
+													
+													_this.setState({ clicked: BUTTONS[buttonIndex] });
+												}
+											)
+										}}
+									>
+										<Card>
+											<CardItem>
+												<Body style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
+													<View style={{width:"30%"}}>
+														<Image source={{uri: Workout['mIP'] + '/upload/file?s=exercises&f=' + exerciseInfo.get('exerciseImg') +'&d=muscle.png'}} style={{ height: 75, width: 90, flex: 1}}/>
+													</View>
+													<View style={{width:"70%", paddingLeft: 5}}>
+														<Text>{exerciseInfo.get('exerciseName')}</Text>
+														<View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
+															<View style={{width:'50%'}}>
+																<Text>Sets: {vSets}</Text>
+															</View>
+															<View style={{width:'50%'}}>
+																<Text>Reps: {vReps}</Text>
+															</View>
+															<View style={{width:'50%'}}>
+																<Text>1RM: {vRm}</Text>
+															</View>
+															<View style={{width:'50%'}}>
+																<Text>Rest: {vRest}</Text>
+															</View>
 														</View>
 													</View>
-												</View>
-											</Body>
-										</CardItem>
-									</Card>
+												</Body>
+											</CardItem>
+										</Card>
+									</TouchableOpacity>
 						})}
-					</View>
+					</Root>
 				}
 			})}
 		</View>

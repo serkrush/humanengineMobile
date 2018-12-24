@@ -14,27 +14,20 @@ import {
 	Right,
 	Form,
 	View,
-	Item, Input, Card, CardItem, ScrollableTab
+	Item, Input
 } from "native-base";
-import { Image, TouchableOpacity } from 'react-native';
 import { Action } from 'redux';
-// import { loadCategories } from '../../models/categories';
+
 import { saveWorkouts } from "../../models/workouts";
 
-// import {Workout} from "../../models/workouts";
-
 import styles from '../../stories/screens/Home/styles';
-// import { loadWorkoutExercises } from '../../models/workouts';
-// import {  TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
-import { Field, FieldArray, reduxForm } from "redux-form";
-import { List } from 'immutable';
+import { Field, reduxForm } from "redux-form";
 
 const required = value => (value ? undefined : "Required");
 
 export interface Props {
     navigation: any;
 	saveWorkouts: (data) => Action;
-	// entities: any;
 }
 
 export interface State {
@@ -42,7 +35,6 @@ export interface State {
 }
 
 class SetsContainer extends React.Component<Props, State> {
-	
 	
 	constructor(props) {
 		super(props);
@@ -55,23 +47,9 @@ class SetsContainer extends React.Component<Props, State> {
 	}
 
 	newWorkout(data) {
-		console.log("data", data);
-
 		const { saveWorkouts } = this.props;
 		saveWorkouts(data);
 		this.props.navigation.navigate("NewWorkout", {});
-
-
-		// if (valid) {
-		// 	//this.props.navigation.navigate("Drawer");
-		// } else {
-		// 	Toast.show({
-		// 		text: "Enter Valid Username & password!",
-		// 		duration: 2000,
-		// 		position: "top",
-		// 		textStyle: { textAlign: "center" },
-		// 	});
-		// }
 	}
 
 	renderInput({ input, meta: { touched, error } }) {
@@ -97,16 +75,25 @@ class SetsContainer extends React.Component<Props, State> {
 									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[" + this.props.navigation.getParam('indexExercise', 0) + "].sets[" + i + "].set" }
 									component={this.renderInput} 
 									validate={[required]} 
+									placeholder="Set"
 								/>
 								<Field 
-									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[" + this.props.navigation.getParam('indexExercise', 0) + "].sets[" + i + "].weight" }
+									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[" + this.props.navigation.getParam('indexExercise', 0) + "].sets[" + i + "].rep" }
 									component={this.renderInput} 
 									validate={[required]} 
+									placeholder="Rep"
 								/>
 								<Field 
-									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[" + this.props.navigation.getParam('indexExercise', 0) + "].sets[" + i + "].reps" }
+									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[" + this.props.navigation.getParam('indexExercise', 0) + "].sets[" + i + "].rest" }
 									component={this.renderInput} 
 									validate={[required]} 
+									placeholder="Rest"
+								/>
+								<Field 
+									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[" + this.props.navigation.getParam('indexExercise', 0) + "].sets[" + i + "].rm" }
+									component={this.renderInput} 
+									validate={[required]} 
+									placeholder="RM"
 								/>
 							</View>
 			// <View key = {i}><Text>loop</Text></View>
