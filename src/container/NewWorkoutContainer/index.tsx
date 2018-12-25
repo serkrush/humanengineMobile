@@ -22,7 +22,7 @@ import { Image, TextInput, TouchableOpacity, Alert } from 'react-native';
 
 import styles from '../../stories/screens/Home/styles';
 // import { saveWorkouts } from '../../models/workouts';
-import { Field, FieldArray, reduxForm, change, arrayRemoveAll } from "redux-form";
+import { Field, FieldArray, reduxForm, change, arrayRemove } from "redux-form";
 import Workout from "../../models/workouts";
 
 
@@ -215,8 +215,9 @@ const renderDays = ({ fields, _this, _workout, meta: { error, submitFailed } }) 
 															[
 																{text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
 																{text: 'OK', onPress: () => {console.log('fields3',_this.props.newWorkout);
-																arrayRemoveAll('newWorkout', 'days')/*fields.remove(0)*/
+																_this.props.dispatch(arrayRemove('newWorkout', 'days[0].exercises', _i))
 																// change('newWorkout','values.days', undefined)
+																// _this.props.dispatch(change("newWorkout", "days", []))
 																
 																}},
 															],
