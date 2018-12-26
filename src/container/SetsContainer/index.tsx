@@ -48,6 +48,8 @@ class SetsContainer extends React.Component<Props, State> {
 
 	newWorkout(data) {
 		const { saveWorkouts } = this.props;
+		console.log('data sets', data);
+		
 		saveWorkouts(data);
 		this.props.navigation.navigate("NewWorkout", {});
 	}
