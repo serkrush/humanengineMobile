@@ -87,6 +87,7 @@ class ExercisesContainer extends React.Component<Props, State> {
 				</Header>
 				<Content>
                     <Form>
+						<Text>111</Text>
                         <View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
                             {
                                 ex && ex.map((e,i)=>{

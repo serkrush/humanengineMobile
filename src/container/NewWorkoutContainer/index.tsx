@@ -40,7 +40,8 @@ export interface State {
 	_fields: any,
 	indexDay: number,
 	indexExercise: number,
-	flagDelete: boolean
+	flagDelete: boolean,
+	addDay: boolean,
 }
 class NewWorkoutContainer extends React.Component<Props, State> {
 
@@ -53,6 +54,7 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 		
 		this.state = {
 			active: 'true',
+			addDay: false,
 			indexDay: 0,
 			indexExercise: workoutDays?workoutDays[0].exercises.length:0,
 			flagDelete: false
@@ -128,14 +130,14 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 								component={this.renderTextarea} 
 								validate={[required]} />
 						</View>
-						<FieldArray name="days" component={renderDays} _this={this} _workout={workout} />
+						<FieldArray name="days" component={renderDays} _this={this} _workout={workout} _addDay={this.state.addDay} />
 
 
-						{/* <View padder>
+						<View padder>
 							<Button block onPress={handleSubmit(this.newWorkout)}>
 								<Text>Save</Text>
 							</Button>
-						</View> */}
+						</View>
 					</Form>
 
 				</Content>
@@ -151,7 +153,7 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 					>
 						<Text>+</Text>
 						
-						<Button style={{ backgroundColor: '#ff9052' }} onPress={() => this.setState({_fields: this.state._fields.push({})}) }>
+						<Button style={{ backgroundColor: '#ff9052' }} onPress={() => {this.setState({addDay: true});console.log('addDay',this.state.addDay);} }>
 							<Text style={{position:"absolute", left:-80, color:"#000"}}>{(this.state.active)?"Day":""}</Text>
 							<Text>+</Text>
 						</Button>
@@ -174,9 +176,9 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 	}
 }
 
-async function alertDelete(i,_i,_this) {
-	const { handleSubmit, getFormValues } = _this.props;
-	console.log('alertDelete', getFormValues);
+async function alertDelete(_fields,_index, _this) {
+	const { handleSubmit } = _this.props;
+	// console.log('alertDelete', getFormValues);
 	//handleSubmit(this.newWorkout)
 	
 	const choice = await AlertAsync(
@@ -193,20 +195,20 @@ async function alertDelete(i,_i,_this) {
 	);
 	
 	if (choice === 'yes') {
-		await _this.props.dispatch(arrayRemove('newWorkout', 'days['+i+'].exercises', _i));
-		// await console.log('1111', _this.props.handleSubmit(_this.newWorkout));
-		// _this.props.handleSubmit(_this.newWorkout)
-		// console.log('_this',_this.newWorkout);
-		await handleSubmit(_this.newWorkout)
-		// await _this.props.navigation.navigate("NewWorkout", {});
-		// await _this.props.dispatch(handleSubmit(_this.newWorkout()));
+		await console.log('yes');
+		await _fields.remove(_index);
+		// await _this.props.dispatch(arrayRemove('newWorkout', 'days['+i+'].exercises', _i));
+		// await _this.props.handleSubmit(_this.newWorkout);
+	
 	}
 	else {
 		await console.log('no');
 	}
 }
 
-const renderDays = ({ fields, _this, _workout, meta: { error, submitFailed } }) => {
+const renderDays = ({ fields, _this, _workout, _addDay, meta: { error, submitFailed } }) => {
+	console.log('addDay2',_addDay);
+	if (fields.length==0 || _addDay){fields.push({});_this.setState({addDay: false})};
 	return <View>
 			<Tabs renderTabBar={()=> <ScrollableTab />}>
 			{
@@ -238,31 +240,54 @@ const renderDays = ({ fields, _this, _workout, meta: { error, submitFailed } }) 
 }
 
 const renderExercises = ({ indexDay, _workout, _day, fields, _this, meta: { error, submitFailed } }) => {
-	console.log('_workout',_workout, indexDay);
-	// let _exercises = _day.get('exercises').toJS();
-	
-	
-	
+	console.log('renderExercises');
 	
     return <View>
-		{fields.map((exercise, index) => 
+		{fields && fields.map((exercise, index) => 
                 {
-					console.log('exercise',exercise, index);
-					let exerciseInfo = _this.props.exercises.getIn([_day[indexDay].exercises[index].exercise]);
+					let exerciseInfo = (_day[indexDay].exercises[index])?_this.props.exercises.getIn([_day[indexDay].exercises[index].exercise]):'';
+					console.log('exerciseInfo',exerciseInfo.length);
+					
+					var BUTTONS = [ "Change", "Delete", "Cancel" ];
+					var DESTRUCTIVE_INDEX = 3;
+					var CANCEL_INDEX = 4;
 					return 	<TouchableOpacity 
 								key={"exercise_"+index+Math.random()}
+								onPress={() =>{
+									ActionSheet.show(
+										{
+											options: BUTTONS,
+											cancelButtonIndex: CANCEL_INDEX,
+											destructiveButtonIndex: DESTRUCTIVE_INDEX,
+										},
+										buttonIndex => {
+											if (buttonIndex==1){
+												alertDelete(fields,index,_this);
+											}
+											
+											_this.setState({ clicked: BUTTONS[buttonIndex] });
+										}
+									)
+								}}
 							>
 								<Card>
 									<CardItem>
+										<View><Button 
+												onPress={() =>{
+													console.log('index',index);
+													fields.remove(index)
+												}}
+											>
+												<Text>Del{index}</Text>
+											</Button></View>
 										<Body style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
-											
-											{console.log('_exercises',_day[indexDay].exercises[index].exercise,exerciseInfo)}
 											<View style={{width:"30%"}}>
-												<Image source={{uri: Workout['mIP'] + '/upload/file?s=exercises&f=' + exerciseInfo.get('exerciseImg') +'&d=muscle.png'}} style={{ height: 75, width: 90, flex: 1}}/>
+												<Image source={{uri: Workout['mIP'] + '/upload/file?s=exercises&f='+'' +'&d=muscle.png'}} style={{ height: 75, width: 90, flex: 1}}/>
 											</View>
 											<View style={{width:"70%", paddingLeft: 5}}>
-												<Text>111</Text>
+												<FieldArray name={`${exercise}.sets`} component={renderSets} sets={_day[indexDay].exercises[index].sets} />
 											</View>
+											
 										</Body>
 									</CardItem>
 								</Card>
@@ -270,7 +295,38 @@ const renderExercises = ({ indexDay, _workout, _day, fields, _this, meta: { erro
 				}
                 )}
 	</View>
+}
+
+const renderSets = ({ fields, indexExercise, sets, exercises, categories, meta: { error, submitFailed } }) => {
+	console.log('sets field', sets);
+	let vItogSets = 0;
+	let vItogReps = 0;
+	let vItogRm = 0;
+	let vItogRest = 0;
+	sets && sets.map((s,i)=>{
+		vItogSets += s.set;
+		vItogReps += s.rep;
+		vItogRm += s.rm;
+		vItogRest += s.rest;
+	})
 	
+    return <View>
+				<Text>name</Text>
+				<View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
+					<View style={{width:'50%'}}>
+						<Text>Sets: {vItogSets}</Text>
+					</View>
+					<View style={{width:'50%'}}>
+						<Text>Reps: {vItogReps}</Text>
+					</View>
+					<View style={{width:'50%'}}>
+						<Text>1RM: {vItogRm}</Text>
+					</View>
+					<View style={{width:'50%'}}>
+						<Text>Rest: {vItogRest}</Text>
+					</View>
+				</View>
+			</View>
 }
 
 const NewWorkout = reduxForm({

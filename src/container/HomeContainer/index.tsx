@@ -52,6 +52,8 @@ class HomeContainer extends React.Component<Props, State> {
 		const { workouts, navigation } = this.props;
 		let workoutsUser = [];
 		let workoutsPublic = [];
+		console.log('workouts',workouts);
+		
 		workouts && workouts.map((t, i) => {
 			
 			if (t.get('userId')===user.userId){

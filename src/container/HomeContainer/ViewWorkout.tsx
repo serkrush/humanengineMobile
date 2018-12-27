@@ -14,6 +14,7 @@ class ViewWorkout extends React.Component<Props, State> {
 
 	render() {
         const { workouts } = this.props;
+        // console.log('workouts', workouts);
         
 		return (
 
