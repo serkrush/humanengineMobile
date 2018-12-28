@@ -75,7 +75,9 @@ class CategoriesContainer extends React.Component<Props, State> {
 	}
     
 	render() {
-		const { categories } = this.props;		
+		const { categories } = this.props;
+		console.log('this.props.navigation.getParam',this.props.navigation.getParam('indexDay', 0));
+		
 		
 		return (
 			<Container style={styles.container}>
