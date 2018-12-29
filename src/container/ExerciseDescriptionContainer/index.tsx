@@ -12,21 +12,13 @@ import {
 	Left,
 	Body,
 	Right,
-	Form,
-	View,
-	Item, Input, Card, CardItem, ScrollableTab
+	Form
 } from "native-base";
-import { Image, TouchableOpacity } from 'react-native';
-import { Action } from 'redux';
-// import { loadCategories } from '../../models/categories';
+import { Image } from 'react-native';
 
 import Workout from "../../models/workouts";
-
 import styles from '../../stories/screens/Home/styles';
-// import { loadWorkoutExercises } from '../../models/workouts';
-// import {  TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
-import { Field, FieldArray, reduxForm } from "redux-form";
-import { List } from 'immutable';
+import { reduxForm } from "redux-form";
 
 export interface Props {
     navigation: any;
@@ -38,14 +30,9 @@ export interface State {}
 
 class ExerciseDescriptionContainer extends React.Component<Props, State> {
     textInput: any;
-
-	// componentDidMount() {
-	// 	const { loadCategories} = this.props;
-	// 	loadCategories();
-	// }
     
 	render() {
-		const { navigation, exercises, entities } = this.props;
+		const { navigation } = this.props;
         const ex = navigation.getParam('exercise', []);
         
 		return (

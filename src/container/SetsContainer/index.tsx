@@ -39,11 +39,13 @@ class SetsContainer extends React.Component<Props, State> {
 	constructor(props) {
 		super(props);
 		this.state = {
-			countSets: 0
+			countSets: 0,
+			text: 0 
 		};
 
 		this.loopSets = this.loopSets.bind(this);
 		this.newWorkout = this.newWorkout.bind(this);
+		this.renderInput = this.renderInput.bind(this);
 	}
 
 	newWorkout(data) {
@@ -55,12 +57,17 @@ class SetsContainer extends React.Component<Props, State> {
 	}
 
 	renderInput({ input, meta: { touched, error } }) {
+
 		return (
 			<Item error={error && touched}>
 				<Input
-					ref={c => (this.textInput = c)}
+					// ref={c => (this.textInput = c)}
 					placeholder="Set"
 					secureTextEntry={false}
+					keyboardType="numeric"
+					returnKeyType="go"
+					onChangeText={(text) => this.setState({text})}
+        			value={this.state.text}
 					{...input}
 				/>
 			</Item>
@@ -69,6 +76,12 @@ class SetsContainer extends React.Component<Props, State> {
 
 	loopSets(countSets){
 		console.log('loopSets',countSets,this.state.countSets);
+		<Field 
+			name={"days[0].exercises[0].sets[0].set" }
+			component={this.renderInput} 
+			validate={[required]} 
+			placeholder="Set"
+		/>
 		let vLoopSets = [];
 		let i = 0;
 		for (i=0;i<=countSets;i++){
@@ -107,7 +120,6 @@ class SetsContainer extends React.Component<Props, State> {
     
 	render() {
 		const { handleSubmit } = this.props;
-		// const ex = navigation.getParam('exercises', []); 
 		console.log('this.state.countSets',this.state.countSets);
 		
         

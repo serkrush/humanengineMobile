@@ -59,6 +59,8 @@ class Workout extends Model {
         const func = this.request('/workout', {method: 'PUT', crud:CRUD.UPDATE}).bind(this);
         while(true) {
             const data = yield take(SAVE_WORKOUTS);
+            console.log('SAVE_WORKOUTS');
+            
             yield fork(func, data);
             
         }
@@ -94,7 +96,7 @@ class Workout extends Model {
             // data && data.map((d,i)=>{
             //     console.log('watchLoadWorkoutExercises data d', d,i);
             // })
-            // yield fork(func, data);
+               // yield fork(func, data);
         }
     }
 

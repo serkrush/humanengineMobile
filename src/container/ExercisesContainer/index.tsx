@@ -14,19 +14,14 @@ import {
 	Right,
 	Form,
 	View,
-	Item, Input, Card, CardItem, Radio
+	Card, CardItem, Radio
 } from "native-base";
 import { Image, TouchableOpacity } from 'react-native';
-import { Action } from 'redux';
-// import { loadCategories } from '../../models/categories';
 
 import Workout from "../../models/workouts";
 
 import styles from '../../stories/screens/Home/styles';
-// import { loadWorkoutExercises } from '../../models/workouts';
-// import {  TabViewAnimated, TabBar, SceneMap } from 'react-native-tab-view';
 import { Field, FieldArray, reduxForm } from "redux-form";
-import { List } from 'immutable';
 
 export interface Props {
 	navigation: any;
@@ -53,10 +48,9 @@ class ExercisesContainer extends React.Component<Props, State> {
 		return (
 			<Radio
 				{...input}
-				onPress={() => {input.onChange(val); changeState(); this.props.navigation.navigate("ExerciseDescription", {exercise: exercise, indexDay:indexDay, indexExercise:indexExercise})  }}
+				onPress={() => {input.onChange(val); changeState(); console.log('exercise:', exercise, 'indexDay:',indexDay, 'indexExercise:',indexExercise); this.props.navigation.navigate("ExerciseDescription", {exercise: exercise, indexDay:indexDay, indexExercise:indexExercise})  }}
 				selected={selected === val}
 				style={{position:"absolute",height:'100%',width:'100%',opacity:0}}
-				// color="transparent"
 			/>
 		)
 	}
@@ -70,7 +64,6 @@ class ExercisesContainer extends React.Component<Props, State> {
 	render() {
 		const { entities } = this.props;
 		const ex = this.props.navigation.getParam('exercises', []);
-		console.log('this.props.navigation.',this.props.navigation.getParam('indexExercise', 0) );
 		
 		return (
 			<Container style={styles.container}>
@@ -92,8 +85,6 @@ class ExercisesContainer extends React.Component<Props, State> {
                                 ex && ex.map((e,i)=>{
 									let _exercise = entities.getIn(['exercises', e]);
 									const inExercise = this.props.navigation.getParam('indexExercise', 0);
-                                    console.log('_exercise',inExercise);
-                                    
                                         
 										return <TouchableOpacity 
 													key={"exercise_"+i+"_"+Math.random()} 

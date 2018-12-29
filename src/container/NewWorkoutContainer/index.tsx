@@ -1,7 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { Action } from "redux";
-import { UPDATE } from "../../redux/actions";
 
 import {
 	Container,
@@ -16,13 +15,13 @@ import {
 	Right,
 	Form,
 	View,
-	Item, Input, Tab, Tabs, ScrollableTab, Fab, Card, CardItem, ActionSheet, Root
+	Item, Input, Tab, Tabs, ScrollableTab, Fab, Card, CardItem, ActionSheet
 } from "native-base";
-import { Image, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { Image, TextInput, TouchableOpacity } from 'react-native';
 
 import styles from '../../stories/screens/Home/styles';
 import { saveWorkouts } from "../../models/workouts";
-import { Field, FieldArray, reduxForm, getFormValues, arrayRemove, submit } from "redux-form";
+import { Field, FieldArray, reduxForm,  submit } from "redux-form";
 import Workout from "../../models/workouts";
 import AlertAsync from "react-native-alert-async";
 
@@ -42,6 +41,7 @@ export interface State {
 	indexExercise: number,
 	flagDelete: boolean,
 	addDay: boolean,
+	text: number,
 }
 class NewWorkoutContainer extends React.Component<Props, State> {
 
@@ -49,7 +49,6 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 	constructor(props: Props) {
 		
 		super(props);
-		// .days[0].exercises.length
 		const workoutDays = this.props.workout.get('days').toJS();
 		
 		this.state = {
@@ -57,18 +56,12 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 			addDay: false,
 			indexDay: 0,
 			indexExercise: workoutDays?workoutDays[0].exercises.length:0,
-			flagDelete: false
+			flagDelete: false,
+			text: 0
 		};
-		this.newWorkout = this.newWorkout.bind(this);
-	}
 
-	newWorkout(data) {
-		console.log('2222', data);
-		
-		const { saveWorkouts } = this.props;
-		saveWorkouts(data);
+		this.renderInput2 = this.renderInput2.bind(this);
 	}
-
 
 	renderInput({ input, meta: { touched, error } }) {
 		return (
@@ -82,17 +75,30 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 			</Item>
 		);
 	}
-
-
-	// test(){
-	// 	console.log('test');
-	// 	this.props.dispatch(submit('remoteSubmit'))
-	// 	// dispatch(submitFormValues(values))
-	// 	// const { handleSubmit } = this.props;
-	// 	// this.newWorkout;
-	// }
-
 	
+	
+	handleInputChange = (text) => {
+		console.log('text',text);
+		
+		if (/^\d+$/.test(text)) {
+			this.setState({
+				text: text
+			});
+		}
+	}
+	renderInput2({ input, meta: { touched, error } }) {
+		return (
+			<Item error={error && touched}>
+				<Input
+					ref={c => (this.textInput = c)}
+					placeholder="WorkoutName"
+					secureTextEntry={false}
+					// parse={value => isNaN(parseInt(val, 10)) ? null : parseInt(val, 10)}
+					{...input}
+				/>
+			</Item>
+		);
+	}
 
 	renderTextarea({ input, meta: { touched, error } }){
 		return (
@@ -110,9 +116,7 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 	}
 
 	render() {
-		const { handleSubmit, workout } = this.props;
-
-		console.log('alertDelete0', this);
+		const { workout } = this.props;
 
 		return (
 			<Container style={styles.container}>
@@ -141,14 +145,16 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 								component={this.renderTextarea} 
 								validate={[required]} />
 						</View>
-						<FieldArray name="days" component={renderDays} _this={this} _workout={workout} _addDay={this.state.addDay} />
-
-
-						<View padder>
-							<Button block onPress={handleSubmit(this.newWorkout)}>
-								<Text>Save</Text>
-							</Button>
+						<View>
+							<Field 	
+								name="days[0].exercises[0].sets[0].set"
+								component={this.renderInput2} 
+								parse={value => Number(value)}
+								validate={[required]} 
+								
+							/>
 						</View>
+						<FieldArray name="days" component={renderDays} _this={this} _workout={workout} _addDay={this.state.addDay} />
 					</Form>
 
 				</Content>
@@ -164,15 +170,15 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 					>
 						<Text>+</Text>
 						
-						<Button style={{ backgroundColor: '#ff9052' }} onPress={() => {this.setState({addDay: true});console.log('addDay',this.state.addDay);} }>
+						<Button style={{ backgroundColor: '#ff9052' }} onPress={() => {this.setState({addDay: true});} }>
 							<Text style={{position:"absolute", left:-80, color:"#000"}}>{(this.state.active)?"Day":""}</Text>
 							<Text>+</Text>
 						</Button>
 						
 						<Button 
 							style={{ backgroundColor: '#ff9052' }} 
-							onPress={() => {console.log('this.state.indexDay',this.state.indexDay);
-							this.props.navigation.navigate("Categories", {
+							onPress={() => {
+											this.props.navigation.navigate("Categories", {
 																							indexDay: this.state.indexDay,
 																							indexExercise: this.state.indexExercise,
 																							countDay: (this.state._fields)?this.state._fields.length:0
@@ -190,9 +196,6 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 }
 
 async function alertDelete(_fields,_index, _this) {
-	const { handleSubmit } = _this.props;
-	console.log('alertDelete', _this);
-	//handleSubmit(this.newWorkout)
 	
 	const choice = await AlertAsync(
 		'Title',
@@ -208,24 +211,13 @@ async function alertDelete(_fields,_index, _this) {
 	);
 	
 	if (choice === 'yes') {
-		await console.log('yes',_this.state.indexDay);
 		await _fields.remove(_index);
 		await _this.props.dispatch(submit('newWorkout'));
-		// await _this.props.dispatch(arrayRemove('newWorkout', 'days['+_this.state.indexDay+'].exercises', _index));
-		// await _this.test();// _this.props.handleSubmit(_this.newWorkout);
-	
 	}
 	else {
 		await console.log('no');
 	}
 }
-
-// function submit(values) {
-// 	console.log(values);
-	
-//     //Can log the values to the console, but submitFormValues actionCreator does not appear to be dispatched.
-//     // return new Promise(function(resolve) { resolve(submitFormValues(values))} )
-// }
 
 const renderDays = ({ fields, _this, _workout, _addDay, meta: { error, submitFailed } }) => {
 	
@@ -242,19 +234,6 @@ const renderDays = ({ fields, _this, _workout, _addDay, meta: { error, submitFai
 					
 						<FieldArray name={`${day}.exercises`} component={renderExercises} _workout={_workout} _day={_workout.get('days').toJS()} indexDay={index} _this={_this}/>
 					</Tab>
-			
-            // <div key={"day_"+index} className="relative mt-4">
-            //     <button
-            //         type="button"
-            //         title="Remove Day"
-            //         onClick={() => fields.remove(index)}
-            //         className = "p-5 block ml-auto absolute pin-r text-grey-700 hover:text-grey-600">
-            //         <h3><i className="fas fa-trash-alt fa-lg"></i></h3>
-            //     </button>
-                
-            //     <FieldArray name={`${day}.exercises`} component={renderExercises} exercises={exercises} categories={categories} indexDay={index} _this={_this}/>
-                
-            // </div>
 		))}
 		</Tabs>
     </View>
@@ -272,7 +251,11 @@ const renderExercises = ({ indexDay, _workout, _day, fields, _this, meta: { erro
 				let exerciseImg = '';
 				if (exerciseInfo!='' && exerciseInfo){
 					exerciseImg = exerciseInfo.get('exerciseImg');
-				} 
+				}
+				let exerciseName = '';
+				if (exerciseInfo!='' && exerciseInfo){
+					exerciseName = exerciseInfo.get('exerciseName');
+				}
 				
 				var BUTTONS = [ "Change", "Delete" ];
 				// var DESTRUCTIVE_INDEX = 3;
@@ -286,12 +269,13 @@ const renderExercises = ({ indexDay, _workout, _day, fields, _this, meta: { erro
 									},
 									buttonIndex => {
 										if (buttonIndex==1){
-											console.log('index1',index);
-											
 											alertDelete(fields,index,_this);
-											// fields.remove(index);
-											// _this.props.handleSubmit(_this.newWorkout)
-
+										} else if (buttonIndex==0){
+											console.log('change');
+											_this.props.navigation.navigate("Sets",{
+												indexDay: 0,//_this.props.navigation.getParam('indexDay', 0),
+												indexExercise: 0,//this.props.navigation.getParam('indexExercise', 0),
+											})
 										}
 										
 										_this.setState({ clicked: BUTTONS[buttonIndex] });
@@ -302,20 +286,12 @@ const renderExercises = ({ indexDay, _workout, _day, fields, _this, meta: { erro
 						>
 							<Card>
 								<CardItem>
-									<View><Button 
-											onPress={() =>{
-												console.log('index2',index);
-												fields.remove(index)
-											}}
-										>
-											<Text>Del{index}</Text>
-										</Button></View>
 									<Body style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
 										<View style={{width:"30%"}}>
 											<Image source={{uri: Workout['mIP'] + '/upload/file?s=exercises&f='+ exerciseImg +'&d=muscle.png'}} style={{ height: 75, width: 90, flex: 1}}/>
 										</View>
 										<View style={{width:"70%", paddingLeft: 5}}>
-											{<FieldArray name={`${exercise}.sets`} component={renderSets} sets={exerciseSetsInfo} />}
+											{<FieldArray name={`${exercise}.sets`} component={renderSets} sets={exerciseSetsInfo} exerciseName={exerciseName} />}
 											{/* {(exerciseSetsInfo===null)?<FieldArray name={`${exercise}.sets`} component={renderSets} sets={exerciseSetsInfo} />:<Text></Text>} */}
 										</View>
 									</Body>
@@ -327,7 +303,7 @@ const renderExercises = ({ indexDay, _workout, _day, fields, _this, meta: { erro
 	</View>
 }
 
-const renderSets = ({ fields, indexExercise, sets, exercises, categories, meta: { error, submitFailed } }) => {
+const renderSets = ({ fields, indexExercise, sets, exerciseName, meta: { error, submitFailed } }) => {
 	let vItogSets = 0;
 	let vItogReps = 0;
 	let vItogRm = 0;
@@ -339,7 +315,7 @@ const renderSets = ({ fields, indexExercise, sets, exercises, categories, meta: 
 		vItogRest += s.rest;
 	})
     return <View>
-				<Text>name</Text>
+				<Text>{exerciseName}</Text>
 				<View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
 					<View style={{width:'50%'}}>
 						<Text>Sets: {vItogSets}</Text>
@@ -363,7 +339,7 @@ const NewWorkout = reduxForm({
 	forceUnregisterOnUnmount: true, // <------ unregister fields on unmount
 	enableReinitialize: true,
 	// onSubmit: submit,
-	onSubmit: (data) => { console.log('data',data);  },
+	onSubmit: (data, dispatch, props) => { props.saveWorkouts(data); },
 })(NewWorkoutContainer);
 
 
@@ -388,4 +364,4 @@ const mapStateToProps = (state, props) => {
 
 
 
-export default connect(mapStateToProps, {saveWorkouts, mapDispatchToProps})(NewWorkout);
+export default connect(mapStateToProps, {saveWorkouts})(NewWorkout);
