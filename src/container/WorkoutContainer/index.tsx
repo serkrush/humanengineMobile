@@ -63,7 +63,7 @@ class WorkoutContainer extends React.Component<Props, State> {
 						/>
 						<View style={{position: 'absolute',width: '100%',height: '100%',backgroundColor: '#FFF', opacity:0.8}}></View>
 						<Text style={{textAlign:'center', fontSize:25, marginTop:40, fontWeight:'bold'}}>{workout.get('workoutName')}</Text>
-						<Button style={{marginLeft:'auto',marginRight:'auto',marginTop:30, backgroundColor:'#47525e'}} onPress={() => this.props.navigation.navigate("WorkoutStart")}>
+						<Button style={{marginLeft:'auto',marginRight:'auto',marginTop:30, backgroundColor:'#47525e'}} onPress={() => this.props.navigation.navigate("WorkoutTimer")}>
 							<Text>Start Workout</Text>
 						</Button>
 						<Button style={{marginLeft:'auto',marginRight:'auto',marginTop:15, backgroundColor:'#47525e'}}>

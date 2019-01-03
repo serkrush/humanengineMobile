@@ -41,7 +41,7 @@ export interface State {
 	indexExercise: number,
 	flagDelete: boolean,
 	addDay: boolean,
-	text: number,
+	active: boolean,
 }
 class NewWorkoutContainer extends React.Component<Props, State> {
 
@@ -52,15 +52,12 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 		const workoutDays = this.props.workout.get('days').toJS();
 		
 		this.state = {
-			active: 'true',
+			active: false,
 			addDay: false,
 			indexDay: 0,
 			indexExercise: workoutDays?workoutDays[0].exercises.length:0,
 			flagDelete: false,
-			text: 0
 		};
-
-		this.renderInput2 = this.renderInput2.bind(this);
 	}
 
 	renderInput({ input, meta: { touched, error } }) {
@@ -75,30 +72,7 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 			</Item>
 		);
 	}
-	
-	
-	handleInputChange = (text) => {
-		console.log('text',text);
-		
-		if (/^\d+$/.test(text)) {
-			this.setState({
-				text: text
-			});
-		}
-	}
-	renderInput2({ input, meta: { touched, error } }) {
-		return (
-			<Item error={error && touched}>
-				<Input
-					ref={c => (this.textInput = c)}
-					placeholder="WorkoutName"
-					secureTextEntry={false}
-					// parse={value => isNaN(parseInt(val, 10)) ? null : parseInt(val, 10)}
-					{...input}
-				/>
-			</Item>
-		);
-	}
+
 
 	renderTextarea({ input, meta: { touched, error } }){
 		return (
@@ -117,6 +91,8 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 
 	render() {
 		const { workout } = this.props;
+		let styleContent = 1;
+		(this.state.active)?styleContent=0.2:styleContent=1;
 
 		return (
 			<Container style={styles.container}>
@@ -131,28 +107,21 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 					</Body>
 					<Right />
 				</Header>
-				<Content>
+				<Content style={{opacity:styleContent}}>
 					<Form>
 						<View style={styles.contentPadding}>
+							<Text>Workout name</Text>
 							<Field 
 								name="workoutName" 
 								component={this.renderInput} 
 								validate={[required]} />
 						</View>
 						<View style={styles.contentPadding}>
+							<Text style={{marginTop:15}}>Workout description</Text>
 							<Field 
 								name="description" 
 								component={this.renderTextarea} 
 								validate={[required]} />
-						</View>
-						<View>
-							<Field 	
-								name="days[0].exercises[0].sets[0].set"
-								component={this.renderInput2} 
-								parse={value => Number(value)}
-								validate={[required]} 
-								
-							/>
 						</View>
 						<FieldArray name="days" component={renderDays} _this={this} _workout={workout} _addDay={this.state.addDay} />
 					</Form>
@@ -258,8 +227,6 @@ const renderExercises = ({ indexDay, _workout, _day, fields, _this, meta: { erro
 				}
 				
 				var BUTTONS = [ "Change", "Delete" ];
-				// var DESTRUCTIVE_INDEX = 3;
-				// var CANCEL_INDEX = 4;
 				return 	<TouchableOpacity 
 							key={"exercise_"+index+Math.random()}
 							onPress={() =>{
@@ -273,8 +240,9 @@ const renderExercises = ({ indexDay, _workout, _day, fields, _this, meta: { erro
 										} else if (buttonIndex==0){
 											console.log('change');
 											_this.props.navigation.navigate("Sets",{
-												indexDay: 0,//_this.props.navigation.getParam('indexDay', 0),
-												indexExercise: 0,//this.props.navigation.getParam('indexExercise', 0),
+												indexDay: indexDay,
+												indexExercise: index,
+												countSets: _day[indexDay].exercises[index].sets.length - 1
 											})
 										}
 										
@@ -292,7 +260,6 @@ const renderExercises = ({ indexDay, _workout, _day, fields, _this, meta: { erro
 										</View>
 										<View style={{width:"70%", paddingLeft: 5}}>
 											{<FieldArray name={`${exercise}.sets`} component={renderSets} sets={exerciseSetsInfo} exerciseName={exerciseName} />}
-											{/* {(exerciseSetsInfo===null)?<FieldArray name={`${exercise}.sets`} component={renderSets} sets={exerciseSetsInfo} />:<Text></Text>} */}
 										</View>
 									</Body>
 								</CardItem>
@@ -315,7 +282,7 @@ const renderSets = ({ fields, indexExercise, sets, exerciseName, meta: { error, 
 		vItogRest += s.rest;
 	})
     return <View>
-				<Text>{exerciseName}</Text>
+				<Text style={{fontSize:17,fontWeight:"bold"}}>{exerciseName}</Text>
 				<View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
 					<View style={{width:'50%'}}>
 						<Text>Sets: {vItogSets}</Text>

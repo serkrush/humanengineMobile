@@ -50,11 +50,11 @@ class ExerciseDescriptionContainer extends React.Component<Props, State> {
 				</Header>
 				<Content>
                     <Form>
-                        <Text style={{textAlign:"center"}}>{ex.get('exerciseName')}</Text>
-                        <Image source={{uri: Workout['mIP'] + '/upload/file?s=exercises&f=' + ex.get('exerciseImg') +'&d=muscle.png'}} style={{height: 200, width: null, flex: 1}}/>
-                        <Text>{ex.get('description')}</Text>
+                        <Text style={{textAlign:"center",fontSize:17,fontWeight:"bold"}}>{ex.get('exerciseName')}</Text>
+                        <Image source={{uri: Workout['mIP'] + '/upload/file?s=exercises&f=' + ex.get('exerciseImg') +'&d=muscle.png'}} style={{height: 200, width: null, flex: 1, marginTop:20}}/>
+                        <Text style={{marginTop:20}}>{ex.get('description')}</Text>
 						<Button 
-							style={{marginLeft:"auto",marginRight:"auto"}} 
+							style={{marginLeft:"auto",marginRight:"auto", marginTop:20}} 
 							onPress={() => this.props.navigation.navigate("Sets",{
 								indexDay: this.props.navigation.getParam('indexDay', 0),
 								indexExercise: this.props.navigation.getParam('indexExercise', 0),

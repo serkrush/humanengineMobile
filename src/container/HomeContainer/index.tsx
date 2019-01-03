@@ -87,7 +87,6 @@ class HomeContainer extends React.Component<Props, State> {
 				<Text style={{ fontSize:20, fontWeight: 'bold', marginTop:10 }}>Templates</Text>
 				{(workoutsPublic)?<ViewWorkout navigation={navigation} workouts={workoutsPublic} />:null}
 			</Content>
-			<Button onPress={() => this.props.navigation.navigate("Test", {})} ><Text>Test</Text></Button>
 			<Button 
 				onPress={() => this.props.navigation.navigate("NewWorkout", {})} 
 				style={{position:"absolute",right:10,bottom:20,borderRadius:50,backgroundColor:"#00a6ff"}}
