@@ -252,6 +252,7 @@ const renderExercises = ({ indexDay, _workout, _day, fields, _this, meta: { erro
 								)
 							}}
 						>
+							<Text>{'index_' + index}</Text>
 							<Card>
 								<CardItem>
 									<Body style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>

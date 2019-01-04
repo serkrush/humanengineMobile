@@ -83,6 +83,8 @@ class ExercisesContainer extends React.Component<Props, State> {
                         <View style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
                             {
                                 ex && ex.map((e,i)=>{
+									console.log('eeeeeeeee',e);
+									
 									let _exercise = entities.getIn(['exercises', e]);
 									const inExercise = this.props.navigation.getParam('indexExercise', 0);
                                         

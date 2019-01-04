@@ -30,12 +30,20 @@ export interface Props {
 	// loadWorkoutExercises: (data) => Action<any>;
 }
 
-export interface State {}
+export interface State {
+	tabDay: number
+}
 
 class WorkoutContainer extends React.Component<Props, State> {
+	constructor(props) {
+		super(props);
+		this.state = {
+			tabDay: 0
+		};
+	}
 
 	render() {
-		const { navigation, exercises, entities } = this.props;
+		const { navigation, entities } = this.props;
 		const workout = navigation.getParam('workout', []);
 		console.log('workout',workout);
 		
@@ -63,7 +71,7 @@ class WorkoutContainer extends React.Component<Props, State> {
 						/>
 						<View style={{position: 'absolute',width: '100%',height: '100%',backgroundColor: '#FFF', opacity:0.8}}></View>
 						<Text style={{textAlign:'center', fontSize:25, marginTop:40, fontWeight:'bold'}}>{workout.get('workoutName')}</Text>
-						<Button style={{marginLeft:'auto',marginRight:'auto',marginTop:30, backgroundColor:'#47525e'}} onPress={() => this.props.navigation.navigate("WorkoutTimer")}>
+						<Button style={{marginLeft:'auto',marginRight:'auto',marginTop:30, backgroundColor:'#47525e'}} onPress={() => this.props.navigation.navigate("WorkoutTimer",{tabDay:this.state.tabDay,days:days })}>
 							<Text>Start Workout</Text>
 						</Button>
 						<Button style={{marginLeft:'auto',marginRight:'auto',marginTop:15, backgroundColor:'#47525e'}}>
@@ -73,7 +81,7 @@ class WorkoutContainer extends React.Component<Props, State> {
 
 					<Text>{ workout.get('description') }</Text>
 
-					<Tabs renderTabBar={ ()=> <ScrollableTab /> }>
+					<Tabs renderTabBar={ ()=> <ScrollableTab /> } onChangeTab={(i, ref)=> {this.setState({tabDay:i.i})}}>
 
 						{
 							days && days.map((day, i) => {
