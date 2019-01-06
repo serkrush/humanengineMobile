@@ -16,7 +16,7 @@ import {
 	Body,
 	Right,
 } from "native-base";
-// import { AppRegistry, FlatList, StyleSheet, View } from 'react-native';
+// import Spinner from 'react-native-loading-spinner-overlay';
 
 import { Map } from 'immutable';
 import styles from '../../stories/screens/Home/styles';//"../stories/screens/styles";
@@ -31,22 +31,29 @@ export interface Props {
 
 export interface State {
 	userId: string;
+	spinner: boolean;
 }
 class HomeContainer extends React.Component<Props, State> {
 	
 	constructor(props) {
 		super(props);
+		this.state = {
+			// spinner: true
+		};
 		this.renderContainer = this.renderContainer.bind(this);
 	}
 
 	async componentDidMount() {
 		const { loadWorkoutsUser} = this.props;
+
 		Auth.getToken().then(token => console.log("token", token));
 		
 		const userId = await Auth.getUserId() || '';
 		this.setState({ userId });
 		loadWorkoutsUser();
+		
 	}
+
 	
 	renderContainer(user) {
 		const { workouts, navigation } = this.props;
@@ -66,6 +73,11 @@ class HomeContainer extends React.Component<Props, State> {
 		});
 
 		return <Container style={styles.container}>
+			{/* <Spinner
+				visible={this.state.spinner}
+				textContent={'Loading...'}
+				textStyle={styles.spinnerTextStyle}
+			/> */}
 			<Header>
 				<Left>
 					<Button transparent>

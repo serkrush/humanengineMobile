@@ -1,6 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { Action } from "redux";
+import { UPDATE } from '../../redux/actions';
 
 import {
 	Container,
@@ -167,8 +168,8 @@ class NewWorkoutContainer extends React.Component<Props, State> {
 async function alertDelete(_fields,_index, _this) {
 	
 	const choice = await AlertAsync(
-		'Title',
-		'Message',
+		'Delete',
+		'Delete exercise?',
 		[
 			{text: 'Yes', onPress: () =>  'yes'},
 			{text: 'No', onPress: () => Promise.resolve('no')},
@@ -315,9 +316,9 @@ const mapStateToProps = (state, props) => {
 	const { entities, requestResult } = state;
 
 	let workoutId = '5c18bb09831ccc36bd058fc5';//props.workoutId;
-	// if (requestResult && requestResult.has('workouts') && requestResult.get('workouts').has(UPDATE)) {
-	// 	workoutId = requestResult.getIn(['workouts', UPDATE]).first();
-	// }
+	if (requestResult && requestResult.has('workouts') && requestResult.get('workouts').has(UPDATE)) {
+		workoutId = requestResult.getIn(['workouts', UPDATE]).first();
+	}
 	
 	const workout = (workoutId && entities.get('workouts'))?entities.get('workouts').get(workoutId):null;
 	
