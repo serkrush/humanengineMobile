@@ -16,6 +16,7 @@ import {
 	View,
 	Item, Input
 } from "native-base";
+import { TextInput } from "react-native";
 import { Action } from 'redux';
 
 import { saveWorkouts } from "../../models/workouts";
@@ -32,6 +33,7 @@ export interface Props {
 
 export interface State {
 	countSets: number;
+	inputValue: string;
 }
 
 class SetsContainer extends React.Component<Props, State> {
@@ -40,7 +42,7 @@ class SetsContainer extends React.Component<Props, State> {
 		super(props);
 		this.state = {
 			countSets: this.props.navigation.getParam('countSets', 0),
-			text: 0 
+			inputValue: "0" 
 		};
 
 		this.loopSets = this.loopSets.bind(this);
@@ -56,19 +58,24 @@ class SetsContainer extends React.Component<Props, State> {
 		this.props.navigation.navigate("NewWorkout", {});
 	}
 
-	renderInput({ input, meta: { touched, error } }) {
+	renderInput({ input, meta: { touched, error }, inputProps }) {
 		input.value = String(input.value);
+		console.log('input111',input, inputProps, this.props);
+		// const { ...inputProps } = props;
+		
 		return (
-			<Item error={error && touched} 
-			style={{width:'19%'}}>
-				<Input
-					secureTextEntry={false}
+			<Item 
+				error={error && touched} 
+				style={{width:'19%'}}
+			>
+				<TextInput
+					onChangeText={input.onChange}
+					onBlur={input.onBlur}
+					onFocus={input.onFocus}
+					value= {input.value}
 					keyboardType="numeric"
-					returnKeyType="go"
-					onChangeText={(text) => this.setState({text})}
-					value={this.state.text}
 					style={{borderWidth:1,marginLeft:0,marginRight:0,marginTop:10,textAlign:"center",padding:0}}
-					{...input}
+					defaultValue="1"
 				/>
 			</Item>
 		);
@@ -79,12 +86,37 @@ class SetsContainer extends React.Component<Props, State> {
 		let i = 0;
 		for (i=0;i<=countSets;i++){
 			let vIndex = i;
+			
 			vLoopSets.push(<View key = {i}  style={{ flex: 1, flexDirection: "row", flexWrap: 'wrap' }}>
 								<Field 
 									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[" + this.props.navigation.getParam('indexExercise', 0) + "].sets[" + i + "].set" }
-									component={this.renderInput} 
-									validate={[required]} 
-									placeholder="Set"
+									component={(val) => {
+										console.log('input set val.',val, val.input.value);
+										if(val.input.value==''){
+											console.log('null');
+											
+										} else {
+											console.log('not null');
+
+										}
+										return (
+											<Item 
+												style={{width:'19%'}}
+											>
+												<TextInput
+													onChangeText={val.input.onChange}
+													onBlur={val.input.onBlur}
+													onFocus={val.input.onFocus}
+													value= {(val.input.value=='')?String(i):String(val.input.value)}
+													keyboardType="numeric"
+													editable = {false}
+													style={{borderWidth:0,marginLeft:0,marginRight:0,marginTop:10,textAlign:"center",padding:0,width:'100%'}}
+													// defaultValue="1"
+												/>
+											</Item>
+										);
+									}}
+									validate={[required]}
 								/>
 								<Field 
 									name={"days[" + this.props.navigation.getParam('indexDay', 0) + "].exercises[" + this.props.navigation.getParam('indexExercise', 0) + "].sets[" + i + "].rep" }
